@@ -1,0 +1,1 @@
+CREATE TABLE loop.table0 (id INT) ;

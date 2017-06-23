@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS db_test.table0(
+  id STRING
+)
+PARTITIONED BY (day STRING)
+;

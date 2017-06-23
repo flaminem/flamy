@@ -1,0 +1,2 @@
+dependencies = db_out.table_out1, db_out.table_out2
+

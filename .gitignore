@@ -1,0 +1,3 @@
+target/
+/conf/flamy.properties
+tests/

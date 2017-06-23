@@ -1,0 +1,52 @@
+/*
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package com.flaminem.flamy.utils.hadoop
+
+import java.net.URI
+
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.FileSystem
+import org.scalatest.BeforeAndAfterEach
+
+
+/**
+ * Created by fpin on 12/12/14.
+ */
+trait AbstractFileSystemTesting extends SequentialTesting with BeforeAndAfterEach {
+
+  val testRootDir = f"tests/fs"
+  var fs: FileSystem = null
+
+  def configure(conf: Configuration)
+
+  override def beforeEach() = {
+    super.beforeEach
+    val conf = new Configuration
+    conf.setBoolean("fs.file.impl.disable.cache", true)
+    configure(conf)
+    fs = FileSystem.get(new URI("file:///"), conf)
+    fs.mkdirs(testRootDir)
+  }
+
+  override def afterEach() = {
+    super.afterEach
+    fs.delete(testRootDir, true)
+    fs.close()
+  }
+
+}
+

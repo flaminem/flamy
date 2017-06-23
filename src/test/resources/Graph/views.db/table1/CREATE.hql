@@ -1,0 +1,1 @@
+CREATE TABLE views.table1 (id INT) ;

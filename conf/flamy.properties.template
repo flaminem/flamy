@@ -1,0 +1,61 @@
+# Here is a simple template of configuration for flamy from which to start.
+# Despite the suffix (.properties), the configuration format used is HOCON, which is a superset of JSON.
+# In short, it means you can write your configuration as a JSON, as a JSON without commas or quotes
+# or even (almost) as a regular .properties file. It also support substitution (${...}).
+# There is a few difference with regular .properties files, which are listed here.
+# https://github.com/typesafehub/config/blob/master/HOCON.md#note-on-java-properties-similarity
+# The main difference to remember is that colons (:) require to be inside double quotes (") to be correctly parsed.
+
+flamy.model.dir.paths = <Path of the directory containing all the hql files> 
+
+flamy.variables.path = <Path to the file where the variables are defined>
+
+flamy.env.model.hive.presets.path = ${flamy.model.dir.paths}/local_PRESETS.hql
+
+# If you use any custom Hive UDF, specify the path to the jar here
+# and don't forget to add them as CREATE TEMPORARY FUNCTION in the model's PRESETS.hql file.
+flamy.udf.classpath = <colon-separated path to the custom UDF jars>
+
+
+
+##############################
+#         Environments       #
+##############################
+# You can define multiple remote environments and configure them differently
+# For example, if you use a 'dev' and a 'prod' cluster, you may configure flamy as follows
+
+################ dev ################
+# The implementation used to retreive metatada from Hive ('client' or 'direct')
+# 'client' uses the HiveThriftClient and is slower than 'direct'.
+flamy.env.dev.hive.meta.fetcher.type = client
+
+# required for client fetcher.
+flamy.env.dev.hive.metastore.uri = "thrift://<HIVE_METASTORE_URL>:<HIVE_METASTORE_PORT>"
+
+flamy.env.dev.hive.server.uri   = "<DEV_HIVE_SERVER_URL>:<DEV_HIVE_SERVER_PORT>"
+flamy.env.dev.hive.server.login = flamy
+flamy.env.dev.hive.presets.path = ${flamy.model.dir.paths}/dev_PRESETS.hql
+
+################# prod ###############
+# HOCON also allows you to nest configuration parameters with the same prefix, for more conciseness.
+
+flamy.env.prod {
+  # The implementation used to retreive metatada from Hive ('client' or 'direct')
+  # 'direct' uses a direct JDBC connection to the Metastore's SQL database. 
+  # it is faster than 'client' but requires some configuration 
+  # (CF section "Setting up direct Metastore access" in the documentation).
+  hive.meta.fetcher.type = direct
+
+  # required for direct 
+  # supported DB_TYPEs are postgresql and mysql (also compatible with mariaDB). 
+  # mysql requires to download the JDBC driver jar separately.
+  hive.metastore.jdbc.uri = "jdbc:<DB_TYPE>://<HIVE_METASTORE_DB_URL>:<HIVE_METASTORE_DB_PORT>/hive"
+
+  hive.metastore.jdbc.user = flamy
+  hive.metastore.jdbc.password = <FLAMY_PASSWORD>
+
+  hive.server.uri   = "<PROD_HIVE_SERVER_URL>:<PROD_HIVE_SERVER_PORT>"
+  hive.server.login = flamy
+  hive.presets.path = ${flamy.model.dir.paths}/prod_PRESETS.hql
+}
+

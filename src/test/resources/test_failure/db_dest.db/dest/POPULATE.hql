@@ -1,0 +1,20 @@
+INSERT OVERWRITE TABLE db_dest.dest PARTITION (partCol1, partCol2)
+SELECT
+WRONG_FUNCTION(id),
+WRONG_FUNCTION(booleanCol),
+WRONG_FUNCTION(tinyintCol),
+WRONG_FUNCTION(smallintCol),
+WRONG_FUNCTION(intCol),
+WRONG_FUNCTION(bigintCol),
+WRONG_FUNCTION(floatCol),
+WRONG_FUNCTION(doubleCol),
+WRONG_FUNCTION(decimalCol),
+WRONG_FUNCTION(stringCol),
+WRONG_FUNCTION(varcharCol),
+WRONG_FUNCTION(timestampCol),
+WRONG_FUNCTION(dateCol),
+WRONG_FUNCTION(binaryCol),
+WRONG_FUNCTION(mapCol),
+WRONG_FUNCTION(partCol1),
+WRONG_FUNCTION(partCol2)
+FROM db_source.source_view

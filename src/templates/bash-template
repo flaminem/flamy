@@ -1,0 +1,13 @@
+#!/bin/bash
+# Reference: http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+ARGS=("$@")
+FLAMY_JAVA_OPTIONS="-XX:MaxPermSize=512M -XX:+CMSClassUnloadingEnabled"
+RUN="java ${FLAMY_JAVA_OPTIONS} ${FLAMY_EXTRA_JAVA_OPTIONS} -cp $DIR/../lib/*:$DIR/../conf:$DIR/../additional_jars/* com.flaminem.flamy.Launcher"
+
+exec ${RUN} "${ARGS[@]}" #2>&1 | ${DIR}/colorTap
+
+exit ${PIPESTATUS[0]}
+
+

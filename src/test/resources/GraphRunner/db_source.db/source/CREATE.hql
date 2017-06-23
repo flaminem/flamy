@@ -1,0 +1,26 @@
+-- DROP TABLE IF EXISTS db_source.source ;
+CREATE TABLE IF NOT EXISTS db_source.source
+(
+id INT,
+booleanCol BOOLEAN,
+tinyintCol TINYINT,
+smallintCol SMALLINT,
+intCol INT,
+bigintCol BIGINT,
+floatCol FLOAT,
+doubleCol DOUBLE,
+decimalCol DECIMAL,
+stringCol STRING,
+varcharCol VARCHAR(255),
+timestampCol TIMESTAMP,
+dateCol DATE,
+binaryCol BINARY,
+mapCol MAP<STRING,STRING>
+) 
+PARTITIONED BY (partCol1 STRING, partCol2 STRING)
+ROW FORMAT DELIMITED 
+FIELDS TERMINATED BY '\t' 
+COLLECTION ITEMS TERMINATED BY ','
+MAP KEYS TERMINATED BY ':' 
+STORED AS TEXTFILE 
+;

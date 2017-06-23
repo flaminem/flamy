@@ -1,0 +1,1 @@
+CREATE TABLE isolated_loop.table2 (id INT) ;
