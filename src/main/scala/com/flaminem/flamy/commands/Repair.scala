@@ -56,9 +56,9 @@ class Repair extends Subcommand("repair") with FlamySubcommand{
   }
 
   private def repairTables(context: FlamyContext, items: ItemName*): Unit = {
-    val itemFilter = new ItemFilter(items,true)
+    val itemFilter = new ItemFilter(items, acceptIfEmpty = true)
     val fetcher = HiveTableFetcher(context)
-    val tables: Iterable[TableName] = fetcher.listTables(itemFilter).filterNot{_.isView}.map{_.tableName}
+    val tables: Iterable[TableName] = fetcher.listTables(itemFilter).filterNot{_.isView}.filter{_.isPartitioned}.map{_.tableName}
 
     val actionRunner: ActionRunner = new ActionRunner()
     for {

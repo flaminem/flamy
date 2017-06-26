@@ -68,6 +68,10 @@ trait TTable extends Named {
     tableType == TableType.EXT
   }
 
+  def isPartitioned: Boolean = {
+    partitionKeys.nonEmpty
+  }
+
   override def equals(other: Any): Boolean = {
     other match {
       case that: TTable =>
