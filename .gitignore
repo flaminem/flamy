@@ -1,3 +1,4 @@
 target/
 /conf/flamy.properties
 tests/
+.idea
