@@ -200,7 +200,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       varName = "hive.metastore.uri",
       defaultValue = None,
       validator = Validator.required,
-      description = "Thrift URI of the Hive Metastore. Used by in client mode of the meta.fetcher"
+      description = "Thrift URI of the Hive Metastore. Used in client mode of the meta.fetcher"
     )
 
   object HIVE_SERVER_URI extends
