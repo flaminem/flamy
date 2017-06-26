@@ -60,7 +60,7 @@ class Repair extends Subcommand("repair") with FlamySubcommand{
     val fetcher = HiveTableFetcher(context)
     val tables: Iterable[TableName] = fetcher.listTables(itemFilter).filterNot{_.isView}.filter{_.isPartitioned}.map{_.tableName}
 
-    val actionRunner: ActionRunner = new ActionRunner()
+    val actionRunner: ActionRunner = new ActionRunner(silentOnSuccess = false)
     for {
       flamyRunner: FlamyRunner <- AutoClose(FlamyRunner(context))
     } {
