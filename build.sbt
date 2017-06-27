@@ -33,5 +33,5 @@ javaOptions in Test += "-XX:MaxPermSize=1G -XX:MaxMetaspaceSize=1G"
 
 mappings in (Compile, packageDoc) := Seq()
 
-// fork in Test := true
+fork in Test := true
 
