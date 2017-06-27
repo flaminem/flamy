@@ -2,3 +2,7 @@ language: scala
 scala:
    - 2.11.8
 
+script:
+  - sbt -Djava.net.preferIPv4Stack=true test
+
+  
