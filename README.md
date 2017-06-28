@@ -7,17 +7,19 @@
 Flamy is a tool to help organising, validating and running SQL queries and manage their dependencies.
 
 By analyzing queries, Flamy can find dependencies between tables, draw the dependency graph, and run the queries in the right order.
-
 It is also a great tool to quickly validate your hive queries without having to actually run them.
  
 It is currently compatible with Hive and Spark-SQL, and is especially helpful when using Hive on Amazon's EMR. 
- 
+
+## Documentation
+
+See the [wiki](https://github.com/flaminem/flamy/wiki) for installation, configuration, usage instructions, and a tutorial.
+
 ## Installation
 
 To install flamy, you can either build it from source or download a pre-packaged version.
 
-
-### Install dependencies :
+### Dependencies :
 
 Printing dependency graphs requires the program `dot` that can be found in the following packages:
 
@@ -74,14 +76,4 @@ The shell is made to have the same behavior as single commands, in particular, q
 in the exact same way in the flamy shell than in bash.
 Thus, any command used in the flamy shell can be simply copy-pasted into a script to be automated. 
  
-
-### Local install (Debian) :
-
-In your .basrhc, add this and set FLAMY_HOME to the correct value :
-
-```
-FLAMY_HOME=<PATH_TO_FLAMY_INSTALL_DIR> 
-alias flamy=$FLAMY_HOME/bin/flamy
-```
-
 
