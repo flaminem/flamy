@@ -17,25 +17,25 @@ It is currently compatible with Hive and Spark-SQL, and is especially helpful wh
 To install flamy, you can either build it from source or download a pre-packaged version.
 
 
-### Install dependencies
+### Install dependencies :
 
 Printing dependency graphs requires the program `dot` that can be found in the following packages:
 
 #### Debian-based
 
-```bash
+```
 apt-get install graphviz libgraphviz-dev
 ```
 
 #### Mac OS X
 
 Install brew if not already installed
-```bash
+```
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null
 ```
 
 Install graphviz
-```bash
+```
 brew install graphviz
 ```
 
@@ -56,7 +56,7 @@ target/universal/stage/bin/flamy
 Use the following command. In case you encounter PermGenSpace or Metaspace errors, 
 increase the memory allocated to sbt.
 ```
-sbt -mem 2048 test
+sbt test
 ```
 
 ### Extra java options :
