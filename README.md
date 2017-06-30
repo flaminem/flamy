@@ -41,7 +41,14 @@ Install graphviz
 brew install graphviz
 ```
 
-### Build From Source :
+### Download a pre-packaged version :
+
+Download and untar the .tgz from this url:
+```
+https://oss.sonatype.org/service/local/artifact/maven/content?r=snapshots&g=com.flaminem&a=flamy&p=tgz&v=LATEST
+```
+
+### or Build From Source :
  
 run the following command in the project's root folder of the project:
 ```
