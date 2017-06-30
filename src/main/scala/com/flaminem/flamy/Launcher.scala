@@ -18,6 +18,7 @@ package com.flaminem.flamy
 
 import java.io.File
 
+import com.flaminem.flamy.commands.Exit
 import com.flaminem.flamy.commands.utils.{FlamyScallopConf, FlamySubcommand, ScallopUtils}
 import com.flaminem.flamy.conf.hive.ModelHiveContext
 import com.flaminem.flamy.conf._
@@ -174,8 +175,12 @@ object Launcher {
 //    val test = new commands.Test
   }
 
-  class CommandsWithShell(args: Seq[String]) extends Commands(args) {
+  class CommandsOutsideShell(args: Seq[String]) extends Commands(args) {
     val shell = new commands.Shell
+  }
+
+  class CommandsInShell(args: Seq[String]) extends Commands(args) {
+    val exit = new commands.Exit
   }
 
 }
@@ -187,10 +192,10 @@ class Launcher protected(args: Seq[String], withShell: Boolean = false) extends 
 
   lazy val opts: Options = {
     if(withShell) {
-      new CommandsWithShell(args)
+      new CommandsOutsideShell(args)
     }
     else {
-      new Commands(args)
+      new CommandsInShell(args)
     }
   }
 

@@ -19,7 +19,8 @@ package com.flaminem.flamy.exec.shell
 import com.flaminem.flamy.Launcher
 import com.flaminem.flamy.conf.FlamyContext
 import com.flaminem.flamy.model.exceptions.FlamyException
-import com.flaminem.flamy.utils.CliUtils
+
+import scala.util.control.NonFatal
 
 /**
   * Created by fpin on 2/16/17.
@@ -41,7 +42,7 @@ class Command(launcher: Launcher, context: FlamyContext) extends Runnable {
     }
     catch {
       case e: Throwable if interrupted => println("Command interrupted by user")
-      case e: Throwable => throw new FlamyException("Command failed:", e)
+      case NonFatal(e) => throw new FlamyException("Command failed:", e)
     }
   }
 

@@ -22,6 +22,7 @@ import java.nio.file.{Path, Paths}
 import com.flaminem.flamy.Launcher
 import com.flaminem.flamy.commands.Exit
 import com.flaminem.flamy.conf.{Flamy, FlamyContext, SystemContext}
+import com.flaminem.flamy.model.exceptions.ExitException
 import com.flaminem.flamy.utils.CliUtils
 import com.flaminem.flamy.utils.logging.Logging
 import jline.UnixTerminal
@@ -93,18 +94,24 @@ class ShellCLI extends Logging {
     val previousHandler = Signal.handle(SIGINT, CommandInterruptSignalHandler)
     try {
       val args: Array[String] = CliUtils.split(line).filter{_.nonEmpty}.toArray
-      val command: Command = new Command(Launcher.newLauncher(args), rootContext)
-      val thread: Thread = command.thread
-      logger.debug("starting command")
-      CommandInterruptSignalHandler.setCommand(command)
-      thread.start()
-      thread.join()
-      logger.debug("command finished")
+      val launcher: Launcher = Launcher.newLauncher(args)
+      val command: Command = new Command(launcher, rootContext)
+      launcher.opts.subcommand match {
+        case Some(c: Exit) =>
+          throw new ExitException()
+        case _ =>
+          val thread: Thread = command.thread
+          logger.debug("starting command")
+          CommandInterruptSignalHandler.setCommand(command)
+          thread.start()
+          thread.join()
+          logger.debug("command finished")
+      }
     }
     catch {
       case NonFatal(e) => println(e.getMessage)
     }
-    finally{
+    finally {
       Signal.handle(SIGINT, previousHandler)
       CommandInterruptSignalHandler.unsetCommand()
     }
@@ -131,6 +138,7 @@ class ShellCLI extends Logging {
         }
       }
       catch {
+        case e: ExitException => continue = false
         case e: InterruptedException => ()
         case e: UserInterruptException => ()
       }
