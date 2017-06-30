@@ -11,5 +11,10 @@ env:
 after_success:
   - "[[ $TRAVIS_BRANCH == \"master\" ]] && { sbt publish; };"
 
+notifications:
+  email:
+    recipients:
+      - pin.furcy@gmail.com
+    on_success: never
+    on_failure: always
 
-  

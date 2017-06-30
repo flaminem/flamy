@@ -4,6 +4,8 @@ import aether.AetherPlugin._
 import aether.AetherKeys._
 import aether.MavenCoordinates
 
+enablePlugins(UniversalDeployPlugin)
+
 organizationName := "Flaminem"
 organizationHomepage := Some(url("https://flaminem.com/"))
 homepage := Some(url("https://github.com/flaminem/flamy"))
@@ -35,9 +37,7 @@ credentials ++= (
     }
   ).toSeq
 
-enablePlugins(UniversalDeployPlugin)
-
-publishMavenStyle := true
+// publishMavenStyle := true
 
 pomIncludeRepository := { _ => false }
 
