@@ -17,7 +17,7 @@ See the [wiki](https://github.com/flaminem/flamy/wiki) for installation, configu
 
 ## Installation
 
-To install flamy, you can either build it from source or download a pre-packaged version.
+To install flamy, you can either download a pre-packaged version or build it from source.
 
 ### Dependencies :
 
@@ -48,19 +48,36 @@ Download and untar the .tgz from this url:
 https://oss.sonatype.org/service/local/artifact/maven/content?r=snapshots&g=com.flaminem&a=flamy&p=tgz&v=LATEST
 ```
 
-### or Build From Source :
- 
-run the following command in the project's root folder of the project:
+*You still need to install the program `dot` as explained above to be able to display graphs.*
+
+## or Build from source
+
+Compilation requires [`sbt`](http://www.scala-sbt.org/) to compile.
+
 ```
+git clone git@github.com:flaminem/flamy.git
+cd flamy
 sbt clean stage
 ```
 
-you can then run flamy from the terminal with the command:
+The packaging directory will be found at `target/universal/stage`,  with the executable at `target/universal/stage/bin/flamy`
+and the configuration file at `target/universal/stage/conf/flamy.properties` 
+but bear in mind that recompiling the project will regenerate the `target/universal/stage/` folder.
+You can use the `--config-file` to point the configuration file to an alternate location.
+
+### Starting a shell
+
+Once packaged, you can start a shell with 
+
 ```
-target/universal/stage/bin/flamy
+target/universal/stage/bin/flamy shell
 ```
 
-### (Optional) Run unit tests :
+Once in the shell, the `help` command will list all the available commands and their options, and the `show conf` command
+will help you troubleshoot any configuration issue.
+
+
+### (Optional) Runnning unit tests :
 
 Use the following command. In case you encounter PermGenSpace or Metaspace errors, 
 increase the memory allocated to sbt.
