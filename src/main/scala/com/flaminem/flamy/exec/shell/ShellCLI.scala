@@ -20,7 +20,8 @@ import java.io.File
 import java.nio.file.{Path, Paths}
 
 import com.flaminem.flamy.Launcher
-import com.flaminem.flamy.conf.{Flamy, FlamyContext, FlamyGlobalContext, SystemContext}
+import com.flaminem.flamy.commands.Exit
+import com.flaminem.flamy.conf.{Flamy, FlamyContext, SystemContext}
 import com.flaminem.flamy.utils.CliUtils
 import com.flaminem.flamy.utils.logging.Logging
 import jline.UnixTerminal
@@ -33,7 +34,7 @@ import scala.util.control.NonFatal
 /**
   * Created by fpin on 2/16/17.
   */
-class Shell extends Logging {
+class ShellCLI extends Logging {
 
   private val consoleReader: ConsoleReader = new ConsoleReader()
   consoleReader.setPrompt(Flamy.name + "> ")

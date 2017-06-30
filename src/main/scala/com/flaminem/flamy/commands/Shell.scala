@@ -18,7 +18,7 @@ package com.flaminem.flamy.commands
 
 import com.flaminem.flamy.commands.utils.FlamySubcommand
 import com.flaminem.flamy.conf.{FlamyContext, FlamyGlobalOptions}
-import com.flaminem.flamy.exec.shell.Shell
+import com.flaminem.flamy.exec.shell.ShellCLI
 import com.flaminem.flamy.exec.utils.{ReturnStatus, ReturnSuccess}
 import org.rogach.scallop.{ScallopConf, Subcommand}
 
@@ -34,7 +34,7 @@ class Shell extends Subcommand("shell") with FlamySubcommand{
   override def doCommand(globalOptions: FlamyGlobalOptions, subCommands: List[ScallopConf]): ReturnStatus = {
     val context = new FlamyContext(globalOptions)
     assert(subCommands.isEmpty)
-    new com.flaminem.flamy.exec.shell.Shell().mainLoop(context)
+    new ShellCLI().mainLoop(context)
     ReturnSuccess
   }
 
