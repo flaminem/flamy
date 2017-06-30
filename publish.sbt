@@ -37,7 +37,7 @@ credentials ++= (
     }
   ).toSeq
 
-// publishMavenStyle := true
+publishMavenStyle := true
 
 pomIncludeRepository := { _ => false }
 
