@@ -9,15 +9,13 @@ lazy val commonSettings = Seq(
 
 lazy val macros = 
   (project in file("macros"))
-  .settings(commonSettings)
+  .settings(commonSettings ++ Seq(publish := { }))
 
 lazy val root = 
   (project in file("."))
   .dependsOn(macros)
   .aggregate(macros)
   .settings(commonSettings)
-
-scalaVersion := "2.11.8"
 
 scalacOptions in Compile ++= Seq("-unchecked",  "-deprecation",  "-feature")
 
