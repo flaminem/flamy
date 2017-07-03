@@ -15,6 +15,18 @@ It is currently compatible with Hive and Spark-SQL, and is especially helpful wh
 
 See the [wiki](https://github.com/flaminem/flamy/wiki) for installation, configuration, usage instructions, and a tutorial.
 
+
+### Features
+Flamy helps SQL developpers to:
+
+- easily and rapidly check the integrity of their queries, even against an evolving database
+- better vizualize and understand the workflows they created
+- easily deploy and execute them on multiple environments
+- efficiently gather metadata from the Metastore
+ 
+[![10_run](https://github.com/flaminem/flamy-demo/raw/master/gifs/10_run.gif)](https://asciinema.org/a/qel0wqJ5t4drKsU9JS1ymajXZ)
+*(you can click the image to get a video with better resolution)*
+
 ## Installation
 
 To install flamy, you can either download a pre-packaged version or build it from source.
@@ -91,13 +103,4 @@ When running flamy, you can add extra java options to your environment, for exam
 ```
 export FLAMY_EXTRA_JAVA_OPTIONS="-Xmx512m"
 ```
-
-### Flamy shell
-
-You think flamy takes too long to answer? Use the `flamy shell` command to start an interactive shell.
-In addition to being much more responsive, the shell provides an autocomplete feature.
-The shell is made to have the same behavior as single commands, in particular, quotes are handled 
-in the exact same way in the flamy shell than in bash.
-Thus, any command used in the flamy shell can be simply copy-pasted into a script to be automated. 
- 
 
