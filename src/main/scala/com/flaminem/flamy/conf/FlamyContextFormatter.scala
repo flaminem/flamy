@@ -65,12 +65,11 @@ class FlamyContextFormatter(context: FlamyContext) {
     new Tabulator(leftJustify = true).format(header+:table)
   }
 
-  private def confVars: Seq[ConfVarTemplate[_]] = {
-    val globalVars: Seq[ConfVarTemplate[_]] = FlamyGlobalContext.confVars ++ context.confVars.filter{_.confLevel == ConfLevel.Global}
-    val projectVars: Seq[context.ConfVar[_]] = context.confVars.filter{_.confLevel == ConfLevel.Project}.toSeq
-    val envVars: Seq[context.ConfVar[_]] = context.confVars.filter{_.confLevel == ConfLevel.Env}.toSeq
-    (globalVars ++ projectVars ++ envVars).filterNot{_.hidden}
-  }
+  private def staticVars: Seq[FlamyGlobalContext.GlobalConfVar[_]] = FlamyGlobalContext.confVars.filterNot{_.hidden}
+  private def globalVars: Seq[ConfVarTemplate[_]] = context.confVars.filter{_.confLevel == ConfLevel.Global}.filterNot{_.hidden}
+  private def projectVars: Seq[context.ConfVar[_]] = context.confVars.filter{_.confLevel == ConfLevel.Project}.filterNot{_.hidden}
+  private def envVars: Seq[context.ConfVar[_]] = context.confVars.filter{_.confLevel == ConfLevel.Env}.filterNot{_.hidden}
+  private def confVars: Seq[ConfVarTemplate[_]] = (globalVars ++ projectVars ++ envVars ++ staticVars)
 
   /**
     * Formats the used configuration as a .properties template
@@ -93,29 +92,35 @@ class FlamyContextFormatter(context: FlamyContext) {
       }.mkString("")
   }
 
+
+  private def confVarToMarkdown(cv: ConfVarTemplate[_]) = {
+    val default =
+      cv.defaultValue match {
+        case Some(s: String) =>
+          s"""(default: "${cv.defaultValue.get}")"""
+        case Some(v) =>
+          s"(default: ${cv.defaultValue.get})"
+        case None => ""
+      }
+    val tpe =
+      cv.validator match {
+        case Validator.In(s) => s.map {"\"" + _.toString + "\""}.mkString(" \\| ")
+        case _ => cv.typeTag.tpe.toString.replace("[","\\[")
+      }
+    s"`${cv.propertyKey}` $tpe  $default  \n*${cv.description}*\n"
+  }
+
   /**
     * Formats the used configuration as a .markdown doc
     * @return
     */
   def toMarkdown: String = {
-    val header: String =
-      "| Property Name | Default | Description | \n" +
-      "| ------------- | ------- | ----------- | \n"
-    confVars.map{
-      cv =>
-        val default =
-          if(cv.defaultValue.isDefined) {
-            s"${cv.defaultValue.get}"
-          }
-          else {
-            "(none)"
-          }
-        s"""# ${cv.description}$default
-           |${cv.propertyKey} =
-           |
-             |""".stripMargin
-        s"| ${cv.propertyKey} | $default | ${cv.description} |"
-    }.mkString(header,"\n","")
+    "###Global properties\n" +
+    (projectVars++globalVars).map{confVarToMarkdown}.mkString("\n") +
+    "###Environment properties\n These properties can be set for each environment you wan to configure. Just replace `<ENV>` by the name of the correct environment\n\n" +
+    envVars.map{confVarToMarkdown}.mkString("\n") +
+    "###Other properties\n These are additional, less used, properties." +
+    staticVars.map{confVarToMarkdown}.mkString("\n")
   }
 
 }

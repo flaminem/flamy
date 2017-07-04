@@ -40,7 +40,7 @@ class Export extends Subcommand("export") with FlamySubcommand {
     requireOne(template, markdown)
 
     override def doCommand(globalOptions: FlamyGlobalOptions, subCommands: List[ScallopConf]): ReturnStatus = {
-      val context = new FlamyContext(globalOptions, Some(Environment("MyEnv")))
+      val context = new FlamyContext(globalOptions, Some(Environment("<ENV>")))
       if(template()) {
         FlamyOutput.out.println(new FlamyContextFormatter(context).toTemplate)
       }

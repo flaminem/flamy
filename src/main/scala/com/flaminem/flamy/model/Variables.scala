@@ -141,7 +141,7 @@ object Variables {
   }
 
   /**
-    * Create a set of variables from a
+    * Create a set of variables from a sequence of arguments
     * @param l
     * @return
     */

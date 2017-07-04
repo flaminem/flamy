@@ -114,7 +114,7 @@ extends FlamyConfVars(env, FlamyContext.loadConf(propertiesFileUrl, globalOption
   private def init() = {
     FlamyGlobalContext.init(conf)
     RunDirCleaner.cleanRunDir(this)
-    FlamyOutput.setLogLevel(this.VERBOSITY_LEVEL.getProperty)
+    FlamyOutput.setLogLevel(FlamyGlobalContext.VERBOSITY_LEVEL.getProperty)
     logConf()
   }
 

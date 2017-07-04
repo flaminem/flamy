@@ -75,8 +75,9 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       confLevel = Global,
       varName = "projects",
       defaultValue = Some(Nil),
-      validator = Validator.required,
-      description = s"Comma-separated list of projects. Only necessary if multiple projects are configured."
+      validator = Validator.Required(),
+      description = s"Comma-separated list of projects. Only necessary if multiple projects are configured.",
+      hidden = true
     )
 
   object PROJECT extends
@@ -84,8 +85,9 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       confLevel = Global,
       varName = "project",
       defaultValue = None,
-      validator = Validator.optional,
-      description = "Select the project you want to use here. Only necessary if multiple projects are configured."
+      validator = Validator.Optional(),
+      description = "Select the project you want to use here. Only necessary if multiple projects are configured.",
+      hidden = true
     )
 
   object UDF_CLASSPATH extends
@@ -93,7 +95,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       confLevel = Global,
       varName = "udf.classpath",
       defaultValue = None,
-      validator = Validator.optional,
+      validator = Validator.Optional(),
       description = "list of jar paths (separated with ':') where flamy will look for the custom Hive UDFs. " +
         "Don't forget to also add them as CREATE TEMPORARY FUNCTION in the model's presets file."
     )
@@ -103,17 +105,8 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       confLevel = Global,
       varName = "exec.parallelism",
       defaultValue = Some(5),
-      validator = Validator.required,
+      validator = Validator.Required(),
       description = "Controls the maximum number of jobs that flamy is allowed to run simultaneously."
-    )
-
-  object VERBOSITY_LEVEL extends
-    ConfVar[String](
-      confLevel = Global,
-      varName = "verbosity.level",
-      defaultValue = Some("INFO"),
-      validator = Validator.in(FlamyOutput.LogLevel.logLevelNames:_*),
-      description = "Controls the verbosity level of flamy."
     )
 
   ////////////////////////
@@ -124,7 +117,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
     confLevel = Project,
     varName = "model.dir.paths",
     defaultValue = None,
-    validator = Validator.required,
+    validator = Validator.Required(),
     description = "Space-separated list of folder paths where flamy will look for the SQL files of your model."
   )
 
@@ -132,22 +125,30 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
     confLevel = Project,
     varName = "variables.path",
     defaultValue = None,
-    validator = Validator.optional,
-    description = "Path to the file where the variables are defined"
+    validator = Validator.Optional(),
+    description = "Path to the file where the variables are defined."
   )
 
   ////////////////////////////
   // Environment properties //
   ////////////////////////////
 
-  object HDFS_CONF_DIR extends
+  object HIVE_SERVER_URI extends
     ConfVar[String](
       confLevel = Env,
-      varName = "hdfs.conf.dir",
+      varName = "hive.server.uri",
       defaultValue = None,
-      validator = Validator.required,
-      description = "The directory containing the configuration files for hadoop, like core-site.xml and hdfs-site.xml. " +
-      "If the specified path is relative, it will be expanded from the directory containing the flamy.properties file."
+      validator = Validator.Required(),
+      description = "URI of the Hive Server 2."
+    )
+
+  object HIVE_SERVER_LOGIN extends
+    ConfVar[String](
+      confLevel = Env,
+      varName = "hive.server.login",
+      defaultValue = Some(SystemContext.userName),
+      validator = Validator.Required(),
+      description = "Login used to connect to the Hive Server 2."
     )
 
   object HIVE_PRESETS_PATH extends
@@ -155,7 +156,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       confLevel = Env,
       varName = "hive.presets.path",
       defaultValue = None,
-      validator = Validator.optional,
+      validator = Validator.Optional(),
       description = "Path to the .hql presets file for this environment. These presets will be executed before every query run against this environment."
     )
 
@@ -164,7 +165,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       confLevel = Env,
       varName = "hive.meta.fetcher.type",
       defaultValue = Some("default"),
-      validator = Validator.in("direct", "client", "default"),
+      validator = Validator.In(Seq("direct", "client", "default")),
       description = "The implementation used to retreive metatada from Hive ('client' or 'direct')."
     )
 
@@ -173,7 +174,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       confLevel = Env,
       varName = "hive.metastore.uri",
       defaultValue = None,
-      validator = Validator.required,
+      validator = Validator.Required(),
       description = "Thrift URI of the Hive Metastore. Required in client mode of the meta.fetcher."
     )
 
@@ -182,7 +183,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       confLevel = Env,
       varName = "hive.metastore.jdbc.uri",
       defaultValue = None,
-      validator = Validator.required,
+      validator = Validator.Required(),
       description = "JDBC URI of the Hive Metastore database. Required in direct mode of the meta.fetcher."
     )
 
@@ -191,7 +192,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       confLevel = Env,
       varName = "hive.metastore.jdbc.user",
       defaultValue = Some("flamy"),
-      validator = Validator.required,
+      validator = Validator.Required(),
       description = "JDBC user to use when connecting to the Hive Metastore database. Required in direct mode of the meta.fetcher."
     )
 
@@ -200,26 +201,8 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       confLevel = Env,
       varName = "hive.metastore.jdbc.password",
       defaultValue = Some("flamyPassword"),
-      validator = Validator.required,
+      validator = Validator.Required(),
       description = "JDBC password to use when connecting to the Hive Metastore database. Required in direct mode of the meta.fetcher."
-    )
-
-  object HIVE_SERVER_URI extends
-    ConfVar[String](
-      confLevel = Env,
-      varName = "hive.server.uri",
-      defaultValue = None,
-      validator = Validator.required,
-      description = "URI of the Hive Server 2"
-    )
-
-  object HIVE_SERVER_LOGIN extends
-    ConfVar[String](
-      confLevel = Env,
-      varName = "hive.server.login",
-      defaultValue = Some(SystemContext.userName),
-      validator = Validator.required,
-      description = "Login used to connect to the Hive Server 2"
     )
 
   protected def logConf(): Unit = {

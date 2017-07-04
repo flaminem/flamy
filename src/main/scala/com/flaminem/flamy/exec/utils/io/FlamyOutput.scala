@@ -102,7 +102,7 @@ object FlamyOutput {
 
     /* This line must stay after the value declaration or it will be empty */
     val values: Seq[LogLevel] = SealedValues.values[LogLevel]
-    val logLevelNames: Seq[String] = values.map{_.name}
+    val logLevelNames: Seq[String] = values.toSeq.map{_.name}
 
   }
 
