@@ -55,9 +55,9 @@ brew install graphviz
 
 ### Download a pre-packaged version :
 
-Download and untar the .tgz from this url:
+Download and untar the .tgz from [this url](https://oss.sonatype.org/service/local/artifact/maven/content?r=snapshots&g=com.flaminem&a=flamy&p=tgz&v=LATEST):
 ```
-https://oss.sonatype.org/service/local/artifact/maven/content?r=snapshots&g=com.flaminem&a=flamy&p=tgz&v=LATEST
+wget 'https://oss.sonatype.org/service/local/artifact/maven/content?r=snapshots&g=com.flaminem&a=flamy&p=tgz&v=LATEST' | gunzip | tar -x
 ```
 
 *You still need to install the program `dot` as explained above to be able to display graphs.*
