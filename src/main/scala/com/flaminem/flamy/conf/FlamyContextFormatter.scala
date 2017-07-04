@@ -115,11 +115,11 @@ class FlamyContextFormatter(context: FlamyContext) {
     * @return
     */
   def toMarkdown: String = {
-    "###Global properties\n" +
+    "### Global properties\n" +
     (projectVars++globalVars).map{confVarToMarkdown}.mkString("\n") +
-    "###Environment properties\n These properties can be set for each environment you wan to configure. Just replace `<ENV>` by the name of the correct environment\n\n" +
+    "### Environment properties\n These properties can be set for each environment you wan to configure. Just replace `<ENV>` by the name of the correct environment\n\n" +
     envVars.map{confVarToMarkdown}.mkString("\n") +
-    "###Other properties\n These are additional, less used, properties." +
+    "### Other properties\n These are additional, less used, properties." +
     staticVars.map{confVarToMarkdown}.mkString("\n")
   }
 
