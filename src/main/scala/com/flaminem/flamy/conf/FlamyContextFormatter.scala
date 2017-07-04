@@ -26,6 +26,10 @@ import scala.util.{Failure, Success, Try}
  */
 class FlamyContextFormatter(context: FlamyContext) {
 
+  /**
+    * Formats the used configuration as a a table
+    * @return
+    */
   def format(): String = {
     val confVars: Seq[ConfVarTemplate[_]] = context.confVars ++ FlamyGlobalContext.confVars
     val header: Seq[Any] =
@@ -39,7 +43,7 @@ class FlamyContextFormatter(context: FlamyContext) {
       )
     val table: Seq[Seq[Any]] =
       confVars.flatMap{
-        case confVar =>
+        confVar =>
           Try(confVar.getStringFormattedProperty) match {
             case Success(v) =>
               (
@@ -59,6 +63,59 @@ class FlamyContextFormatter(context: FlamyContext) {
           }
       }.toSeq.sortBy{_._1._2}.sortBy{_._1._1}.map{_._2}
     new Tabulator(leftJustify = true).format(header+:table)
+  }
+
+  private def confVars: Seq[ConfVarTemplate[_]] = {
+    val globalVars: Seq[ConfVarTemplate[_]] = FlamyGlobalContext.confVars ++ context.confVars.filter{_.confLevel == ConfLevel.Global}
+    val projectVars: Seq[context.ConfVar[_]] = context.confVars.filter{_.confLevel == ConfLevel.Project}.toSeq
+    val envVars: Seq[context.ConfVar[_]] = context.confVars.filter{_.confLevel == ConfLevel.Env}.toSeq
+    (globalVars ++ projectVars ++ envVars).filterNot{_.hidden}
+  }
+
+  /**
+    * Formats the used configuration as a .properties template
+    * @return
+    */
+  def toTemplate: String = {
+      confVars.map{
+        cv =>
+          val default =
+            if(cv.defaultValue.isDefined) {
+             s"\n# default: ${cv.defaultValue.get}"
+            }
+            else {
+             ""
+            }
+          s"""# ${cv.description}$default
+             |${cv.propertyKey} =
+             |
+             |""".stripMargin
+      }.mkString("")
+  }
+
+  /**
+    * Formats the used configuration as a .markdown doc
+    * @return
+    */
+  def toMarkdown: String = {
+    val header: String =
+      "| Property Name | Default | Description | \n" +
+      "| ------------- | ------- | ----------- | \n"
+    confVars.map{
+      cv =>
+        val default =
+          if(cv.defaultValue.isDefined) {
+            s"${cv.defaultValue.get}"
+          }
+          else {
+            "(none)"
+          }
+        s"""# ${cv.description}$default
+           |${cv.propertyKey} =
+           |
+             |""".stripMargin
+        s"| ${cv.propertyKey} | $default | ${cv.description} |"
+    }.mkString(header,"\n","")
   }
 
 }

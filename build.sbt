@@ -23,7 +23,9 @@ enablePlugins(JavaAppPackaging)
 
 mappings in Universal ++= directory("conf")
 
-mappings in Universal ++= directory("bin")
+mappings in Universal ++= directory("sbin")
+
+mainClass in Compile := Some("com.flaminem.flamy.Launcher")
 
 parallelExecution in Test := false
 

@@ -35,6 +35,7 @@ trait ConfVarTemplate[T] {
   def defaultValue: Option[T]
   def validator: Validator[T]
   def description: String
+  def hidden: Boolean
 
   implicit def typeTag: TypeTag[T]
 

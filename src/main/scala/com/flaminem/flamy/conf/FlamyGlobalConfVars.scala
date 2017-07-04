@@ -130,7 +130,8 @@ class FlamyGlobalConfVars { self =>
     override val varName: String,
     override val defaultValue: Option[T],
     override val validator: Validator[T],
-    override val description: String
+    override val description: String,
+    override val hidden: Boolean = false
   )(implicit override val typeTag: TypeTag[T]) extends ConfVarTemplate[T] {
 
     override def confLevel = ConfLevel.Global
