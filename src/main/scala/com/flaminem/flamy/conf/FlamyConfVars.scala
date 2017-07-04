@@ -221,11 +221,6 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       description = "Login used to connect to the Hive Server 2"
     )
 
-  // temporary fix for java:
-  def getHiveServerUri: String = HIVE_SERVER_URI.getProperty
-  def getHiveServerLogin: String = HIVE_SERVER_LOGIN.getProperty
-
-
   protected def logConf(): Unit = {
     conf.root().entrySet().foreach{
       case entry => logger.info(entry.getKey + " = " + entry.getValue)

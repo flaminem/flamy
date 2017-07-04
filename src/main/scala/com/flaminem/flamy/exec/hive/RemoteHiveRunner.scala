@@ -39,8 +39,8 @@ class RemoteHiveRunner(override val context: FlamyContext) extends HiveRunner(co
 
   Class.forName(HIVE_SERVER2_DRIVER)
 
-  private val host: String = context.getHiveServerUri
-  private val login: String = context.getHiveServerLogin
+  private val host: String = context.HIVE_SERVER_URI.getProperty
+  private val login: String = context.HIVE_SERVER_LOGIN.getProperty
   private val password: String = ""
   private val connectionString: String = "jdbc:hive2://" + host + "/default"
 
