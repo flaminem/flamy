@@ -261,7 +261,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
 
   }
 
-  // This line has to be after the properties declaration or it will be empty
-  val confVars: Set[ConfVar[_]] = SealedValues.values[ConfVar[_]]
+  /* This line must stay after the value declaration or it will be empty */
+  val confVars: Seq[ConfVar[_]] = SealedValues.values[ConfVar[_]]
 
 }

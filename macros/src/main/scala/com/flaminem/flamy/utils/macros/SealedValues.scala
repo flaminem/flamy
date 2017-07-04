@@ -1,6 +1,6 @@
 package com.flaminem.flamy.utils.macros
 
-import scala.collection.immutable.Set
+import scala.collection.immutable.Seq
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
@@ -19,29 +19,29 @@ import scala.reflect.macros.blackbox
   *   case object A extends SealedTrait
   *   case object B extends SealedTrait
   *   case object C extends SealedTrait
-  *   val values: Set[SealedTrait] = SealedTraitValues.values[SealedTrait]
+  *   val values: Seq[SealedTrait] = SealedTraitValues.values[SealedTrait]
   * }
   *
   * println(SealedTrait.values)
-  * > Set(A, B, C)
+  * > Seq(A, B, C)
   *
   * object SealedClass {
   *   sealed abstract class SealedClass
   *   case object A extends SealedClass
   *   case object B extends SealedClass
   *   case object C extends SealedClass
-  *   val values: Set[SealedClass] = SealedTraitValues.values[SealedClass]
+  *   val values: Seq[SealedClass] = SealedTraitValues.values[SealedClass]
   * }
   *
   * println(SealedClass.values)
-  * > Set(A, B, C)
+  * > Seq(A, B, C)
   *
   */
 object SealedValues {
 
-  def values[A]: Set[A] = macro values_impl[A]
+  def values[A]: Seq[A] = macro values_impl[A]
 
-  def values_impl[A: c.WeakTypeTag](c: blackbox.Context) : c.Expr[Set[A]] = {
+  def values_impl[A: c.WeakTypeTag](c: blackbox.Context) : c.Expr[Seq[A]] = {
     import c.universe._
 
     val symbol = weakTypeOf[A].typeSymbol
@@ -66,13 +66,13 @@ object SealedValues {
         Nil
       }
 
-      val children = symbol.asClass.knownDirectSubclasses.toList ::: siblingSubclasses
+      val children = symbol.asClass.knownDirectSubclasses.toList.sortBy{_.pos.start} ::: siblingSubclasses
       if (!children.forall(x => x.isModuleClass || x.isModule)) {
         c.abort(
           c.enclosingPosition,
           "All children must be objects."
         )
-      } else c.Expr[Set[A]] {
+      } else c.Expr[Seq[A]] {
         def sourceModuleRef(sym: Symbol) = Ident(
           if (sym.isModule) {
             sym
@@ -86,7 +86,7 @@ object SealedValues {
 
         Apply(
           Select(
-            reify(Set).tree,
+            reify(Seq).tree,
             TermName("apply")
           ),
           children.map(sourceModuleRef(_))

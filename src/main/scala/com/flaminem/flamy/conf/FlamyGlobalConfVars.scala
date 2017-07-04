@@ -141,7 +141,7 @@ class FlamyGlobalConfVars { self =>
 
   }
 
-  // This line has to be after the properties declaration or it will be empty
-  val confVars: Set[GlobalConfVar[_]] = SealedValues.values[GlobalConfVar[_]]
+  /* This line must stay after the value declaration or it will be empty */
+  val confVars: Seq[GlobalConfVar[_]] = SealedValues.values[GlobalConfVar[_]]
 
 }

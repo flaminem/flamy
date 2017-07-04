@@ -12,7 +12,7 @@ class SealedValues$Test extends FunSuite {
     case object A extends SealedTrait
     case object B extends SealedTrait
     case object C extends SealedTrait
-    val values: Set[SealedTrait] = SealedValues.values[SealedTrait]
+    val values: Seq[SealedTrait] = SealedValues.values[SealedTrait]
   }
 
   object SealedClass {
@@ -20,7 +20,7 @@ class SealedValues$Test extends FunSuite {
     case object A extends SealedClass
     case object B extends SealedClass
     case object C extends SealedClass
-    val values: Set[SealedClass] = SealedValues.values[SealedClass]
+    val values: Seq[SealedClass] = SealedValues.values[SealedClass]
   }
 
   object SealedTypedClass {
@@ -28,32 +28,32 @@ class SealedValues$Test extends FunSuite {
     case object A extends SealedTypedClass[String]
     case object B extends SealedTypedClass[Int]
     case object C extends SealedTypedClass[List[String]]
-    val values: Set[SealedTypedClass[_]] = SealedValues.values[SealedTypedClass[_]]
+    val values: Seq[SealedTypedClass[_]] = SealedValues.values[SealedTypedClass[_]]
   }
 
 
   ignore("We should be able to iterate over a sealed trait implementation") {
     assert(SealedTrait.values.size == 3)
-    assert(SealedTrait.values.map{_.toString}==Set("A","B","C"))
+    assert(SealedTrait.values.map {_.toString} == Seq("A", "B", "C"))
 
     assert(SealedClass.values.size == 3)
-    assert(SealedClass.values.map{_.toString}==Set("A","B","C"))
+    assert(SealedClass.values.map {_.toString} == Seq("A", "B", "C"))
 
     assert(SealedTypedClass.values.size == 3)
-    assert(SealedTypedClass.values.map{_.toString}==Set("A","B","C"))
+    assert(SealedTypedClass.values.map {_.toString} == Seq("A", "B", "C"))
   }
 
   ignore("Declaring the values before the objects WILL NOT work") {
 
     object WrongSealedTrait {
-      val values: Set[SealedTrait] = SealedValues.values[SealedTrait]
+      val values: Seq[SealedTrait] = SealedValues.values[SealedTrait]
       sealed trait SealedTrait
       case object A extends SealedTrait
       case object B extends SealedTrait
       case object C extends SealedTrait
     }
 
-    assert(WrongSealedTrait.values.size == 0)
+    assert(WrongSealedTrait.values.isEmpty)
   }
 
 }

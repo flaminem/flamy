@@ -614,7 +614,8 @@ object SQLFormatter {
       }
     }
 
-    val values: Set[TreeFormatter] = SealedValues.values[TreeFormatter]
+    /* This line must stay after the value declaration or it will be empty */
+    val values: Seq[TreeFormatter] = SealedValues.values[TreeFormatter]
 
     val recTransform: RuleSet[String, String] = new RuleSet[String, String](default, values.toSeq: _*)
 

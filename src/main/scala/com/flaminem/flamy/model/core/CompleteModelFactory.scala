@@ -42,7 +42,7 @@ class CompleteModelFactory(context: FlamyContext, tableGraph: TableGraph) extend
 
   assert(preModel.isInstanceOf[IncompleteModel])
 
-  private val runner: FileRunner = new FileRunner(silentOnSuccess = !FlamyOutput.shouldPrint(FlamyOutput.INFO))
+  private val runner: FileRunner = new FileRunner(silentOnSuccess = !FlamyOutput.shouldPrint(FlamyOutput.LogLevel.INFO))
   private[flamy] var tableDefinitions: TableCollection = TableCollection()
   private[flamy] var mergeableTableInfoSet = MergeableTableInfoCollection()
 

@@ -77,33 +77,39 @@ object FlamyOutput {
     }
   }
 
-  case object DEBUG extends LogLevel {
-    override val name: String = "DEBUG"
-    override val intLevel: Int = 0
-  }
-  case object INFO extends LogLevel {
-    override val name: String = "INFO"
-    override val intLevel: Int = 1
-  }
-  case object WARN extends LogLevel {
-    override val name: String = "WARN"
-    override val intLevel: Int = 2
-  }
-  case object ERROR extends LogLevel {
-    override val name: String = "ERROR"
-    override val intLevel: Int = 3
-  }
-  case object SILENT extends LogLevel {
-    override val name: String = "SILENT"
-    override val intLevel: Int = 4
+  object LogLevel {
+
+    case object DEBUG extends LogLevel {
+      override val name: String = "DEBUG"
+      override val intLevel: Int = 0
+    }
+    case object INFO extends LogLevel {
+      override val name: String = "INFO"
+      override val intLevel: Int = 1
+    }
+    case object WARN extends LogLevel {
+      override val name: String = "WARN"
+      override val intLevel: Int = 2
+    }
+    case object ERROR extends LogLevel {
+      override val name: String = "ERROR"
+      override val intLevel: Int = 3
+    }
+    case object SILENT extends LogLevel {
+      override val name: String = "SILENT"
+      override val intLevel: Int = 4
+    }
+
+    /* This line must stay after the value declaration or it will be empty */
+    val values: Seq[LogLevel] = SealedValues.values[LogLevel]
+    val logLevelNames: Seq[String] = values.map{_.name}
+
   }
 
-  /* This line must be after all the classes that extends LogLevel */
-  val logLevels: Set[LogLevel] = SealedValues.values[LogLevel]
-  val logLevelNames: Seq[String] = FlamyOutput.logLevels.toSeq.map{_.name}
+  import LogLevel._
 
   def setLogLevel(logLevelName: String): Unit = {
-    logLevels.find{_.name == logLevelName} match {
+    values.find{_.name == logLevelName} match {
       case Some(level) => logLevel = level
       case None => ()
     }

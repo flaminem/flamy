@@ -26,11 +26,11 @@ class PartitionColumnFilterTest extends FreeSpec {
 
 
   "A PartitionColumnFilter should be correctly build from a string" in {
-    assert(PartitionColumnFilter.fromString("Key=Value").get === new PartitionColumnFilter(new PartitionColumn("key","Value"),RangeOperator.Equal))
-    assert(PartitionColumnFilter.fromString("Key>Value").get === new PartitionColumnFilter(new PartitionColumn("key","Value"),RangeOperator.Greater))
-    assert(PartitionColumnFilter.fromString("Key>=Value").get === new PartitionColumnFilter(new PartitionColumn("key","Value"),RangeOperator.GreaterOrEqual))
-    assert(PartitionColumnFilter.fromString("Key<Value").get === new PartitionColumnFilter(new PartitionColumn("key","Value"),RangeOperator.Lower))
-    assert(PartitionColumnFilter.fromString("Key<=Value").get === new PartitionColumnFilter(new PartitionColumn("key","Value"),RangeOperator.LowerOrEqual))
+    assert(PartitionColumnFilter.fromString("Key=Value").get === new PartitionColumnFilter(new PartitionColumn("key", "Value"), RangeOperator.Equal))
+    assert(PartitionColumnFilter.fromString("Key>Value").get === new PartitionColumnFilter(new PartitionColumn("key", "Value"), RangeOperator.Greater))
+    assert(PartitionColumnFilter.fromString("Key>=Value").get === new PartitionColumnFilter(new PartitionColumn("key", "Value"), RangeOperator.GreaterOrEqual))
+    assert(PartitionColumnFilter.fromString("Key<Value").get === new PartitionColumnFilter(new PartitionColumn("key", "Value"), RangeOperator.Lower))
+    assert(PartitionColumnFilter.fromString("Key<=Value").get === new PartitionColumnFilter(new PartitionColumn("key", "Value"), RangeOperator.LowerOrEqual))
   }
 
 

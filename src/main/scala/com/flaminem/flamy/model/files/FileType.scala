@@ -18,6 +18,7 @@ package com.flaminem.flamy.model.files
 
 import com.flaminem.flamy.utils.macros.SealedValues
 
+import scala.collection.immutable
 import scala.util.matching.Regex
 
 /**
@@ -112,13 +113,11 @@ object FileType {
     override val multipleFilesAllowed: Boolean = false
   }
 
-  /* This line uses a macro. It has to be after the properties declaration or it will be empty */
-  val values: Set[FileType] = SealedValues.values[FileType]
+  /* This line must stay after the value declaration or it will be empty */
+  val values: immutable.Seq[FileType] = SealedValues.values[FileType]
 
   def getTypeFromFileName(fileName: String): Option[FileType] = {
-    FileType.values.find{
-      case tpe => tpe.matchesFileName(fileName)
-    }
+    FileType.values.find{ tpe => tpe.matchesFileName(fileName) }
   }
 
 }

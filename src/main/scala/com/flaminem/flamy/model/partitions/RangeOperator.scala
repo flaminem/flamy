@@ -92,7 +92,8 @@ object RangeOperator {
     }
   }
 
-  val values: Set[RangeOperator] = SealedValues.values[RangeOperator]
+  /* This line must stay after the value declaration or it will be empty */
+  val values: Seq[RangeOperator] = SealedValues.values[RangeOperator]
 
   def apply(string: String): RangeOperator = {
     values.find(_.name == string) match {

@@ -94,6 +94,7 @@ object PartitionTransformationBuilder {
     }
   }
 
-  val values: Set[PartitionTransformationBuilder] = SealedValues.values[PartitionTransformationBuilder]
+  /* This line must stay after the value declaration or it will be empty */
+  val values: Seq[PartitionTransformationBuilder] = SealedValues.values[PartitionTransformationBuilder]
 
 }

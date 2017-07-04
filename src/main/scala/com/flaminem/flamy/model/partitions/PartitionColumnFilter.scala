@@ -47,7 +47,7 @@ object PartitionColumnFilter {
     */
   def fromString(string: String): Option[PartitionColumnFilter] = {
     val operatorsPattern = RangeOperator.values.map{_.name}.mkString("(","|",")")
-    val regex = s"(.*?)$operatorsPattern(.*)".r
+    val regex = s"([^<>=]*?)$operatorsPattern([^<>=]*)".r
     string match {
       case regex(key, op, value) =>
         val partitionColumn = new PartitionColumn(key.toLowerCase, value)

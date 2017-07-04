@@ -27,7 +27,7 @@ import scala.util.{Failure, Success, Try}
 class FlamyContextFormatter(context: FlamyContext) {
 
   def format(): String = {
-    val confVars: Set[ConfVarTemplate[_]] = context.confVars.map{identity} ++ FlamyGlobalContext.confVars
+    val confVars: Seq[ConfVarTemplate[_]] = context.confVars ++ FlamyGlobalContext.confVars
     val header: Seq[Any] =
       Seq(
          "level"
