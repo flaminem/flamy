@@ -10,10 +10,10 @@ flamy.model.dir.paths = <Path of the directory containing all the hql files>
 
 flamy.variables.path = <Path to the file where the variables are defined>
 
-flamy.env.model.hive.presets.path = ${flamy.model.dir.paths}/local_PRESETS.hql
+flamy.env.model.hive.presets.path = ${flamy.model.dir.paths}/model_PRESETS.hql
 
 # If you use any custom Hive UDF, specify the path to the jar here
-# and don't forget to add them as CREATE TEMPORARY FUNCTION in the model's PRESETS.hql file.
+# and don't forget to add them as CREATE TEMPORARY FUNCTION in the model's presets file.
 flamy.udf.classpath = <colon-separated path to the custom UDF jars>
 
 

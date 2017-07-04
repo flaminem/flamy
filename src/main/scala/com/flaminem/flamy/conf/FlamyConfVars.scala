@@ -94,7 +94,8 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       varName = "udf.classpath",
       defaultValue = None,
       validator = Validator.optional,
-      description = "list of jar paths (separated with ':') where flamy will look for the custom Hive UDFs."
+      description = "list of jar paths (separated with ':') where flamy will look for the custom Hive UDFs. " +
+        "Don't forget to also add them as CREATE TEMPORARY FUNCTION in the model's presets file."
     )
 
   object PARALLELISM extends
@@ -111,7 +112,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       confLevel = Global,
       varName = "verbosity.level",
       defaultValue = Some("INFO"),
-      validator = Validator.in(FlamyOutput.logLevelNames:_*),
+      validator = Validator.in(FlamyOutput.LogLevel.logLevelNames:_*),
       description = "Controls the verbosity level of flamy."
     )
 
@@ -132,7 +133,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
     varName = "variables.path",
     defaultValue = None,
     validator = Validator.optional,
-    description = "TODO"
+    description = "Path to the file where the variables are defined"
   )
 
   ////////////////////////////
@@ -155,7 +156,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       varName = "hive.presets.path",
       defaultValue = None,
       validator = Validator.optional,
-      description = "TODO"
+      description = "Path to the .hql presets file for this environment. These presets will be executed before every query run against this environment."
     )
 
   object HIVE_META_FETCHER_TYPE extends
@@ -164,34 +165,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       varName = "hive.meta.fetcher.type",
       defaultValue = Some("default"),
       validator = Validator.in("direct", "client", "default"),
-      description = "TODO"
-    )
-
-  object HIVE_METASTORE_JDBC_URI extends
-    ConfVar[String](
-      confLevel = Env,
-      varName = "hive.metastore.jdbc.uri",
-      defaultValue = None,
-      validator = Validator.required,
-      description = "TODO"
-    )
-
-  object HIVE_METASTORE_JDBC_USER extends
-    ConfVar[String](
-      confLevel = Env,
-      varName = "hive.metastore.jdbc.user",
-      defaultValue = Some("flamy"),
-      validator = Validator.required,
-      description = "TODO"
-    )
-
-  object HIVE_METASTORE_JDBC_PASSWORD extends
-    ConfVar[String](
-      confLevel = Env,
-      varName = "hive.metastore.jdbc.password",
-      defaultValue = Some("flamyPassword"),
-      validator = Validator.required,
-      description = "TODO"
+      description = "The implementation used to retreive metatada from Hive ('client' or 'direct')."
     )
 
   object HIVE_METASTORE_URI extends
@@ -200,7 +174,34 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       varName = "hive.metastore.uri",
       defaultValue = None,
       validator = Validator.required,
-      description = "Thrift URI of the Hive Metastore. Used in client mode of the meta.fetcher"
+      description = "Thrift URI of the Hive Metastore. Required in client mode of the meta.fetcher."
+    )
+
+  object HIVE_METASTORE_JDBC_URI extends
+    ConfVar[String](
+      confLevel = Env,
+      varName = "hive.metastore.jdbc.uri",
+      defaultValue = None,
+      validator = Validator.required,
+      description = "JDBC URI of the Hive Metastore database. Required in direct mode of the meta.fetcher."
+    )
+
+  object HIVE_METASTORE_JDBC_USER extends
+    ConfVar[String](
+      confLevel = Env,
+      varName = "hive.metastore.jdbc.user",
+      defaultValue = Some("flamy"),
+      validator = Validator.required,
+      description = "JDBC user to use when connecting to the Hive Metastore database. Required in direct mode of the meta.fetcher."
+    )
+
+  object HIVE_METASTORE_JDBC_PASSWORD extends
+    ConfVar[String](
+      confLevel = Env,
+      varName = "hive.metastore.jdbc.password",
+      defaultValue = Some("flamyPassword"),
+      validator = Validator.required,
+      description = "JDBC password to use when connecting to the Hive Metastore database. Required in direct mode of the meta.fetcher."
     )
 
   object HIVE_SERVER_URI extends
@@ -222,9 +223,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
     )
 
   protected def logConf(): Unit = {
-    conf.root().entrySet().foreach{
-      case entry => logger.info(entry.getKey + " = " + entry.getValue)
-    }
+    conf.root().entrySet().foreach{ entry => logger.info(entry.getKey + " = " + entry.getValue) }
   }
 
   def getPossibleEnvironments: List[Environment] = {

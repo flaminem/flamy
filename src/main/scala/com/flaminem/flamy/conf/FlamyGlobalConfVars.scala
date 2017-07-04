@@ -41,14 +41,6 @@ class FlamyGlobalConfVars { self =>
         s"By default this is a temporary directory created in /tmp/${Flamy.name}-$$USER."
     )
 
-  object RUN_LOG_DIR extends
-    GlobalConfVar[String](
-      varName = "run.log.dir",
-      defaultValue = Some(RUN_DIR.defaultValue + "/log"),
-      validator = Validator.required,
-      description = "Set the directory in which the query logs will be written."
-    )
-
   object RUN_DIR_CLEANING_DELAY extends
     GlobalConfVar[Int](
       varName = "run.dir.cleaning.delay",
@@ -63,7 +55,8 @@ class FlamyGlobalConfVars { self =>
       varName = "regen.static.symbol",
       defaultValue = Some("\u2713"),
       validator = Validator.required,
-      description = "Set the symbol used to represent partitions that the regen can predict."
+      description = "Set the symbol used to represent partitions that the regen can predict.",
+      hidden = true
     )
 
   object REGEN_DYNAMIC_SYMBOL extends
@@ -71,7 +64,8 @@ class FlamyGlobalConfVars { self =>
       varName = "regen.dynamic.symbol",
       defaultValue = Some("\u2715"),
       validator = Validator.required,
-      description = "Set the symbol used to represent partitions that the regen cannot predict and will handle dynamically."
+      description = "Set the symbol used to represent partitions that the regen cannot predict and will handle dynamically.",
+      hidden = true
     )
 
   object REGEN_SHOW_INPUTS extends
@@ -79,7 +73,8 @@ class FlamyGlobalConfVars { self =>
       varName = "regen.show.inputs",
       defaultValue = Some(false),
       validator = Validator.required,
-      description = "(experimental feature) This this to true display the number of input partition when running a regen."
+      description = "(experimental feature) This this to true display the number of input partition when running a regen.",
+      hidden = true
     )
 
   object USE_OLD_REGEN extends
