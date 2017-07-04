@@ -37,7 +37,7 @@ import scala.language.reflectiveCalls
 /**
  * Created by fpin on 5/22/15.
  */
-class Check extends Subcommand("check") with FlamySubcommand{
+class Check extends Subcommand("check") with FlamySubcommand {
 
   val quick = new Subcommand("quick") with FlamySubcommand {
     banner("Quick validation of hive queries. Faster than 'check long' but less exhaustive.")
