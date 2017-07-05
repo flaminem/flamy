@@ -17,10 +17,10 @@ See the [wiki](https://github.com/flaminem/flamy/wiki) for installation, configu
 
 
 ### Features
-Flamy helps SQL developpers to:
+Flamy helps SQL developers to:
 
 - easily and rapidly check the integrity of their queries, even against an evolving database
-- better vizualize and understand the workflows they created
+- better visualize and understand the workflows they created
 - easily deploy and execute them on multiple environments
 - efficiently gather metadata from the Metastore
  
@@ -89,7 +89,7 @@ Once in the shell, the `help` command will list all the available commands and t
 will help you troubleshoot any configuration issue.
 
 
-### (Optional) Runnning unit tests :
+### (Optional) Running unit tests :
 
 Use the following command. In case you encounter PermGenSpace or Metaspace errors, 
 increase the memory allocated to sbt.
