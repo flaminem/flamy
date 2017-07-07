@@ -11,7 +11,7 @@ lazy val macros =
   (project in file("macros"))
   .settings(commonSettings ++ Seq(publish := { }))
 
-lazy val root = 
+lazy val flamy = 
   (project in file("."))
   .dependsOn(macros)
   .aggregate(macros)
