@@ -18,6 +18,7 @@ package com.flaminem.flamy.parsing.hive.ast
 
 import com.flaminem.flamy.conf.FlamyContext
 import com.flaminem.flamy.conf.hive.ModelHiveContext
+import com.flaminem.flamy.parsing.hive.HiveParserUtils
 import org.apache.hadoop.hive.ql.parse.{ASTNode, ParseDriver}
 import org.scalatest.{FreeSpec, Matchers}
 
@@ -507,6 +508,52 @@ class SQLFormatter$Test extends FreeSpec with Matchers {
         |)
         |""".stripMargin
 
+    val pd: ParseDriver = new ParseDriver
+    val tree: ASTNode = pd.parse(query, ModelHiveContext.getLightContext(context).hiveContext)
+    assert(SQLFormatter.treeToSQL(tree) === query)
+  }
+
+  "treeToSQL should work with type conversions" in {
+    val query =
+      """SELECT
+        |  TINYINT(NULL),
+        |  SMALLINT(NULL),
+        |  INT(NULL),
+        |  BIGINT(NULL),
+        |  FLOAT(NULL),
+        |  DOUBLE(NULL),
+        |  TIMESTAMP(NULL),
+        |  DATE(NULL),
+        |  STRING(NULL),
+        |  BOOLEAN(NULL),
+        |  BINARY(NULL)
+        |""".stripMargin
+
+    /* INTERVAL, VARCHAR and CHAR don't work in Hive, and DECIMAL(_) throws a NullPointerException */
+
+    val pd: ParseDriver = new ParseDriver
+    val tree: ASTNode = pd.parse(query, ModelHiveContext.getLightContext(context).hiveContext)
+    assert(SQLFormatter.treeToSQL(tree) === query)
+  }
+
+  "treeToSQL should work with CAST(_ AS type)" in {
+    val query =
+      """SELECT
+        |  CAST(NULL AS TINYINT),
+        |  CAST(NULL AS SMALLINT),
+        |  CAST(NULL AS INT),
+        |  CAST(NULL AS BIGINT),
+        |  CAST(NULL AS FLOAT),
+        |  CAST(NULL AS DOUBLE),
+        |  CAST(NULL AS DECIMAL),
+        |  CAST(NULL AS TIMESTAMP),
+        |  CAST(NULL AS DATE),
+        |  CAST(NULL AS STRING),
+        |  CAST(NULL AS BOOLEAN),
+        |  CAST(NULL AS BINARY)
+        |""".stripMargin
+
+    /* INTERVAL, VARCHAR and CHAR don't work in Hive, but DECIMAL does */
     val pd: ParseDriver = new ParseDriver
     val tree: ASTNode = pd.parse(query, ModelHiveContext.getLightContext(context).hiveContext)
     assert(SQLFormatter.treeToSQL(tree) === query)

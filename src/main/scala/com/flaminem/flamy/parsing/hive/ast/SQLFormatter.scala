@@ -86,6 +86,30 @@ object SQLFormatter {
           children.drop(2).map {recTransform(_)}.mkString(recTransform(children(1)) + " IN (", ", ", ")")
         case p if p.getType == HiveParser.Identifier && getName(p).equalsIgnoreCase("between") =>
           formatBetween(prefix, children)
+        case p if p.getType == HiveParser.TOK_TINYINT =>
+          s"CAST(" + recTransform(children(1)) + " AS TINYINT)"
+        case p if p.getType == HiveParser.TOK_SMALLINT =>
+          s"CAST(" + recTransform(children(1)) + " AS SMALLINT)"
+        case p if p.getType == HiveParser.TOK_INT =>
+          s"CAST(" + recTransform(children(1)) + " AS INT)"
+        case p if p.getType == HiveParser.TOK_BIGINT =>
+          s"CAST(" + recTransform(children(1)) + " AS BIGINT)"
+        case p if p.getType == HiveParser.TOK_FLOAT =>
+          s"CAST(" + recTransform(children(1)) + " AS FLOAT)"
+        case p if p.getType == HiveParser.TOK_DOUBLE =>
+          s"CAST(" + recTransform(children(1)) + " AS DOUBLE)"
+        case p if p.getType == HiveParser.TOK_DECIMAL =>
+          s"CAST(" + recTransform(children(1)) + " AS DECIMAL)"
+        case p if p.getType == HiveParser.TOK_TIMESTAMP =>
+          s"CAST(" + recTransform(children(1)) + " AS TIMESTAMP)"
+        case p if p.getType == HiveParser.TOK_DATE =>
+          s"CAST(" + recTransform(children(1)) + " AS DATE)"
+        case p if p.getType == HiveParser.TOK_STRING =>
+          s"CAST(" + recTransform(children(1)) + " AS STRING)"
+        case p if p.getType == HiveParser.TOK_BOOLEAN =>
+          s"CAST(" + recTransform(children(1)) + " AS BOOLEAN)"
+        case p if p.getType == HiveParser.TOK_BINARY =>
+          s"CAST(" + recTransform(children(1)) + " AS BINARY)"
         case p =>
           val distinctString =
             if (distinct) {
