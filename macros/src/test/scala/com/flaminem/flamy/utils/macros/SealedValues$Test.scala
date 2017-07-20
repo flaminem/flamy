@@ -30,7 +30,7 @@ class SealedValues$Test extends FunSuite {
     case object C extends SealedTypedClass[List[String]]
     val values: Seq[SealedTypedClass[_]] = SealedValues.values[SealedTypedClass[_]]
   }
-  
+
   test("We should be able to iterate over a sealed trait implementation") {
     assert(SealedTrait.values.size == 3)
     assert(SealedTrait.values.map {_.toString} == Seq("A", "B", "C"))

@@ -43,6 +43,7 @@ class TableGraph private(
   lazy val vertices: Seq[TableName] = {
     graph.getNodeSeq
   }
+
   lazy val edges: Seq[(TableName, TableName)] = {
     graph.edges.toSeq.map{e => (e.source.value, e.target.value)}
   }
