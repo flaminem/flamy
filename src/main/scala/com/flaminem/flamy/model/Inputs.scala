@@ -20,7 +20,8 @@ import org.json4s.{DefaultFormats, _}
 import org.json4s.native.JsonMethods._
 
 /**
-  * Created by fpin on 1/6/17.
+  * This class represents the input partitions and tables returned by Hive's EXPLAIN DEPENDENCY statement.
+  * It is not supported by Spark-SQL yet.
   */
 case class Inputs(input_partitions: Set[InputPartition], input_tables: Set[InputTable]) {
 
@@ -69,8 +70,5 @@ object Inputs {
     readFromString[Inputs](json)
   }
 
-  def noInputs: Inputs = {
-    Inputs(Set(), Set())
-  }
-
+  object NoInputs extends Inputs(Set(), Set())
 }

@@ -73,7 +73,7 @@ class FlamyGlobalConfVars { self =>
   object REGEN_SHOW_INPUTS extends
     GlobalConfVar[Boolean](
       varName = "regen.show.inputs",
-      defaultValue = Some(false),
+      defaultValue = Some(true),
       validator = Validator.Required(),
       description = "(experimental feature) This this to true display the number of input partition when running a regen.",
       hidden = true

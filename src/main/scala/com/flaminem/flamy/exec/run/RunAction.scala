@@ -16,11 +16,13 @@
 
 package com.flaminem.flamy.exec.run
 
-import com.flaminem.flamy.conf.FlamyContext
+import com.flaminem.flamy.conf.{FlamyContext, FlamyGlobalContext}
 import com.flaminem.flamy.exec.FlamyRunner
 import com.flaminem.flamy.exec.utils.{Action, PopulateAction, SkipAction}
-import com.flaminem.flamy.model.PopulateInfo
+import com.flaminem.flamy.model.{Inputs, PopulateInfo}
 import com.flaminem.flamy.model.names.TableName
+import com.flaminem.flamy.parsing.hive.QueryUtils
+import com.flaminem.flamy.parsing.hive.run.RunActionParser
 import com.flaminem.flamy.utils.AutoClose
 
 /**
@@ -68,7 +70,7 @@ class SkipRunAction(
 }
 
 
-class PopulateRunAction(
+class PopulateRunAction (
   val tableName: TableName,
   val populateInfo: PopulateInfo,
   context: FlamyContext
@@ -76,19 +78,53 @@ class PopulateRunAction(
 
   override def hasDynamicPartitions: Boolean = populateInfo.hasDynamicPartitions
 
-  override def run(): Unit = {
-    val startTime = System.currentTimeMillis()
-    for{
-      runner <- AutoClose(FlamyRunner(context))
-    } {
-      /*
-       * We replace the populateInfo's variables with the one from the context,
-       * because if a partition variable is not defined, we want the job to fail.
-       */
-      runner.runPopulate(populateInfo.copy(variables = context.getVariables))
+  /**
+    * Stores the input information: number of partition and number of tables read
+    */
+  private var inputs: Option[Inputs] = None
+
+  private def inputString: Option[String] = {
+    inputs.flatMap{
+      case Inputs.NoInputs => None
+      case Inputs(input_partitions, input_tables) =>
+        Some(
+          s"reading from ${input_partitions.size} partitions in ${input_tables.size} tables"
+        )
     }
-    val endTime = System.currentTimeMillis()
-    _message = Some(s"${(endTime-startTime)/1000} seconds")
+  }
+
+  private def computeInputs(queries: Seq[String], runner: FlamyRunner): Unit = {
+    if(FlamyGlobalContext.REGEN_SHOW_INPUTS.getProperty) {
+      inputs = Some(queries.filterNot{QueryUtils.isCommand}.flatMap{runner.getInputsFromText}.foldLeft[Inputs](Inputs.NoInputs){ _ + _ } )
+    }
+  }
+
+  override def interrupt(): Unit = {
+    currentRunner.foreach{_.interrupt()}
+    super.interrupt()
+  }
+
+  @volatile
+  private var currentRunner: Option[FlamyRunner] = None
+
+  override def run(): Unit = {
+    val queries: Seq[String] =
+      new RunActionParser().parseText(populateInfo.tableFile.text, context.getVariables, isView = false)(context)
+    val startTime = System.currentTimeMillis()
+    for {
+      runner <- AutoClose(FlamyRunner(context), {r: FlamyRunner => r.close() ; currentRunner = None})
+    } {
+      currentRunner = Some(runner)
+      computeInputs(queries, runner)
+      _message = inputString
+      queries.foreach{
+        query =>
+          val jobTitle: String = s"POPULATE $name"
+          runner.runText(query, Some(jobTitle))
+      }
+      val endTime = System.currentTimeMillis()
+      _message = Some(s"${(endTime-startTime)/1000} seconds")
+    }
   }
 
   @volatile var _message: Option[String] = None

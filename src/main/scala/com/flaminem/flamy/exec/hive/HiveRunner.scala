@@ -17,6 +17,7 @@
 package com.flaminem.flamy.exec.hive
 
 import java.io.File
+import java.sql.SQLException
 
 import com.flaminem.flamy.conf.FlamyContext
 import com.flaminem.flamy.exec.files.{FileRunner, ItemFileAction}
@@ -100,7 +101,7 @@ abstract class HiveRunner(val context: FlamyContext) extends AutoCloseable {
 
 
   private def prepareQuery(query: String, variables: Variables, explainIfDryRun: Boolean): String = {
-    try{
+    try {
       val buildQ: String = variables.replaceInText(query)
       if (dryRun && explainIfDryRun) {
         addExplainPrefix(buildQ)
@@ -116,7 +117,7 @@ abstract class HiveRunner(val context: FlamyContext) extends AutoCloseable {
 
   def runQuery(query: String, title: Option[String], variables: Variables, explainIfDryRun: Boolean): Int = {
     val preparedQuery: String = prepareQuery(query, variables, explainIfDryRun)
-    Try{
+    Try {
       FlamyOutput.out.info("Running query:\n" + preparedQuery)
       runPreparedQuery(preparedQuery, title)
     }
@@ -136,15 +137,19 @@ abstract class HiveRunner(val context: FlamyContext) extends AutoCloseable {
   }
 
   def getInputsFromQuery(query: String, variables: Variables): Seq[Inputs] = {
-    Try{
+    Try {
       val preparedQuery = addExplainDependencyPrefix(prepareQuery(query, variables, explainIfDryRun = false))
       executePreparedQuery(preparedQuery, None)
     }
     match {
-      case Failure(e) => handleQueryFailure(query, e)
+      case Failure(e: java.sql.SQLException) =>
+        /* For EXPLAIN DEPENDENCY, we ignore java.sql.SQLExceptions, as the Spark ThrifServer does not support this command yet */
+        Nil
+      case Failure(e) =>
+        handleQueryFailure(query, e)
         throw new FailedQueryException(e.getMessage, e)
       case Success(returnValue) =>
-        returnValue.map{row => Inputs.fromJson(row(0))}.toSeq
+        returnValue.map{row => Inputs.fromJson(row.head)}.toSeq
     }
   }
 
