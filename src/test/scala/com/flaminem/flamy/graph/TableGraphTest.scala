@@ -68,18 +68,27 @@ class TableGraphTest extends FreeSpec with Matchers {
     assert(g.vertices.map{_.fullName}.toSet===Set("db_dest.dest","db_dest.dest1"))
   }
 
-  "test subGraph2" in {
+  "test subGraph 2" in {
     val preModel = Model.getIncompleteModel(context, Nil)
     val g = TableGraph(preModel).subGraph(from = Seq("db_source.source"), to = Seq("db_source"))
-    assert(g.vertices.map{_.fullName}.toSet===Set("db_source.source","db_source.source_view"))
+    assert(g.vertices.map{_.fullName}.toSet === Set("db_source.source", "db_source.source_view"))
   }
 
-  "test subGraph3" in {
+  "test subGraph 3" in {
     val preModel = Model.getIncompleteModel(context, Nil)
     val g = TableGraph(preModel).subGraph(from = Seq("db_source.source"), to = Seq("db_dest"))
     assert(
       g.vertices.map{_.fullName}.toSet ===
       Set("db_source.source", "db_source.source_view", "db_dest.dest", "db_dest.dest1", "db_dest.dest2", "db_dest.dest12")
+    )
+  }
+
+  "test subGraph 4" in {
+    val preModel = Model.getIncompleteModel(context, Nil)
+    val g = TableGraph(preModel).subGraph(from = Seq("db_source.source", "db_dest.dest2"), to = Seq("db_source.source_view", "db_dest.dest12"))
+    assert(
+      g.vertices.map{_.fullName}.toSet ===
+        Set("db_source.source", "db_source.source_view", "db_dest.dest", "db_dest.dest1", "db_dest.dest2", "db_dest.dest12")
     )
   }
 
@@ -97,12 +106,11 @@ class TableGraphTest extends FreeSpec with Matchers {
     assert(subG.vertices === Seq(ItemName("loop.table0")))
   }
 
-  "subGraph with from to generating a loop should fail" in {
+  "subGraph with coherent --from --to within a loop should succeed" in {
     val context2 = new FlamyContext("flamy.model.dir.paths" -> "src/test/resources/Graph")
     val tableGraph = TableGraph(context2, ItemList(Seq("loop")), checkNoMissingTable = false)
-    intercept[TableGraphException]{
-      tableGraph.subGraph(Seq("loop.view1"), Seq("loop.view2"))
-    }
+    val subG = tableGraph.subGraph(Seq("loop.view1"), Seq("loop.view2"))
+    assert(subG.vertices === Seq(ItemName("loop.view1"), ItemName("loop.view2")))
   }
 
   "subGraph without loop with from to" in {
@@ -139,41 +147,32 @@ class TableGraphTest extends FreeSpec with Matchers {
     assert(g.toString === expected)
   }
 
+  "test ascendants" in {
+    val args: Seq[ItemName] = Seq("db_dest", "db_source").map{ItemName(_)}
+    val model: Model = Model.getCompleteModel(context, args)
+    val g = TableGraph(model)
+    val ascendants =
+      g.cycleProofTraversal(
+        from = Set("db_source.source", "db_source.source_view"),
+        to = Set("db_source.source"),
+        g.TraversalDirection.Predecessors
+      ).toList
+    val expected = Set("db_source.source_view", "db_source.source").map{TableName(_)}
+    assert(ascendants.toSet === expected)
+  }
+
   "test descendants" in {
     val args: Seq[ItemName] = Seq("db_dest", "db_source").map{ItemName(_)}
     val model: Model = Model.getCompleteModel(context,args)
     val g = TableGraph(model)
-    val descendants: List[TableName] = g.getAllDescendants("db_source.source").toList
-    val expected =
-      Set(
-        "db_source.source",
-        "db_source.source_view",
-        "db_dest.dest",
-        "db_dest.dest1",
-        "db_dest.dest2",
-        "db_dest.dest12"
-      ).map{TableName(_)}
+    val descendants =
+      g.cycleProofTraversal(
+        from = Set("db_source.source"),
+        to = Set("db_source.source", "db_source.source_view"),
+        g.TraversalDirection.Successors
+      ).toList
+    val expected = Set("db_source.source_view", "db_source.source").map{TableName(_)}
     assert(descendants.toSet === expected)
-  }
-
-  "test ascendants" in {
-    val args: Seq[ItemName] = Seq("db_dest", "db_source").map{ItemName(_)}
-    val model: Model = Model.getCompleteModel(context,args)
-    val g = TableGraph(model)
-    val ascendants = g.getAllAscendants("db_dest.dest12").toList
-    val expected = Set("db_dest.dest12", "db_dest.dest2", "db_dest.dest1", "db_dest.dest", "db_source.source_view", "db_source.source").map{TableName(_)}
-    assert(ascendants.toSet === expected)
-  }
-
-
-  "test intersection" in {
-    val args: Seq[ItemName] = Seq("db_dest", "db_source").map{ItemName(_)}
-    val model: Model = Model.getCompleteModel(context,args)
-    val g = TableGraph(model)
-    val descendants = g.getAllDescendants("db_source.source").toList
-    val ascendants = g.getAllAscendants("db_dest.dest12").toList
-    val expected = Set("db_dest.dest12", "db_dest.dest2", "db_dest.dest1", "db_dest.dest", "db_source.source_view", "db_source.source").map{TableName(_)}
-    assert(ascendants.intersect(descendants).toSet === expected)
   }
 
   "POPULATE script for parent tables should be removed" in {

@@ -22,11 +22,10 @@ import com.flaminem.flamy.model.core.{IncompleteModel, Model}
 import com.flaminem.flamy.model.files.{FileIndex, FileType, TableFile}
 import com.flaminem.flamy.model.names.{ItemName, TableName}
 
+import scala.collection.mutable
 import scalax.collection.GraphEdge.DiEdge
 import scalax.collection.GraphPredef._
-import scalax.collection.{Graph, GraphTraversal}
-
-// or scalax.collection.mutable.Graph
+import scalax.collection.Graph
 
 /**
  * Created by fpin on 1/2/15.
@@ -150,28 +149,6 @@ class TableGraph private(
     vertices.flatMap{getParents}.distinct.diff(vertices)
   }
 
-  def getAllAscendants(tableName: TableName, stopAt: Set[ItemName] = Set()): Seq[TableName] = {
-    assert(graph.contains(TableName(tableName.fullName)),s"$tableName was not found in the graph. Please report a bug.")
-    graph.get(tableName)
-      .innerNodeTraverser
-      .withDirection(GraphTraversal.Predecessors)
-      .toNodeSeq
-  }
-
-  /**
-    * @param tableName
-    * @param stopAt stop the traversal when we meet one of these nodes (the node is included but not its children)
-    * @return all the descendants of the table
-    */
-  def getAllDescendants(tableName: TableName, stopAt: Set[ItemName] = Set()): Seq[TableName] = {
-    assert(graph.contains(TableName(tableName.fullName)),s"$tableName was not found in the graph. Please report a bug.")
-
-    graph.get(tableName)
-      .innerNodeTraverser
-      .withDirection(GraphTraversal.Successors)
-      .toNodeSeq
-  }
-
   /**
    * Apply a filter to the graph.
    * The ingoing edges are kept, however the information associated to their source nodes is lost.
@@ -226,10 +203,99 @@ class TableGraph private(
     )
   }
 
+  /**
+    * Return true if, starting from start, we can reach at least one of the destination vertices,
+    * without going through the set of vertices to avoid.
+    * @param start
+    * @param destination
+    * @param avoid
+    * @param direction
+    */
+  private def canReach(
+    start: TableName,
+    destination: Set[TableName],
+    avoid: Set[TableName],
+    direction: TraversalDirection
+  ): Boolean = {
+    val visited: mutable.Set[TableName] = mutable.HashSet[TableName]()
+    val toVisit: mutable.HashSet[TableName] = mutable.HashSet[TableName]()
+    toVisit ++= direction.neighbors(start).filter{v => !avoid.contains(v)}
+    var result = false
+    var continue = true
+    while(continue && toVisit.nonEmpty) {
+      val v: TableName = toVisit.head
+      toVisit -= v
+      visited += v
+      if(destination.contains(v) && !avoid.contains(v)) {
+        result = true
+        continue = false
+      }
+      else {
+        toVisit ++= direction.neighbors(v).filter{v => !visited.contains(v) && !avoid.contains(v)}
+      }
+    }
+    result
+  }
+
+  /**
+    * subroutine following the algorithm described in {{{subGraph}}} documentation.
+    * @param from
+    * @param to
+    * @param direction
+    * @return
+    */
+  private[graph]
+  def cycleProofTraversal(from: Set[TableName], to: Set[TableName], direction: TraversalDirection): Set[TableName] = {
+    val visited: mutable.Set[TableName] = mutable.HashSet[TableName]()
+    val toVisit: mutable.HashSet[TableName] = mutable.HashSet[TableName]()
+    toVisit ++= from
+    while(toVisit.nonEmpty) {
+      val v: TableName = toVisit.head
+      toVisit -= v
+      visited += v
+      if(from.contains(v) || !to.contains(v) || canReach(start = v, destination = to, avoid = from, direction = direction)) {
+        toVisit ++= direction.neighbors(v).filter{v => !visited.contains(v)}
+      }
+    }
+    visited.toSet
+  }
+
+  /**
+    * Return a subgraph of all the tables found between the tables in 'from', and the table in 'to'.
+    * In case of cycles, the function has been designed to provide the most 'natural' interpretation possible.
+    * For example, if g = A -> B -> C -> D -> A
+    * then g.subgraph(from = Seq(B), to = Seq(D)) will return B -> C -> D
+    *
+    * If the result contains a cycle, we throw an exception.
+    *
+    * We follow the following pseudo-code algorithm:
+    *
+    * AfterFrom' := {
+    *  Start from all vertices in 'from', traverse the graph in the forward direction,
+    *  and if we meet another vertex X in 'to':
+    *  - If, starting from X, it is possible to reach another vertex Y of 'to' without going through a vertex of 'from',
+    *    (so Y must not belong to 'from' either), then we continue to explore X's successors that we did not already visit.
+    *  - Otherwise we don't explore X's successors (but we may still explore them if we reach them through another path)
+    *  Return the set of all traversed vertices (start and final vertices included).
+    * }
+    * BeforeTo := {
+    *   The 'reverse' of AfterFrom, by applying the same method where 'from' and 'to' roles are exchanged,
+    *   and the traversal direction is reverted.
+    * }
+    * Return the intersection of AfterFrom and BeforeTo.
+    *
+    * @param from
+    * @param to
+    * @return
+    */
+  @throws[TableGraphException]("If the result contains a cycle")
+  private[graph]
   def subGraph(from: Seq[ItemName], to: Seq[ItemName]): TableGraph = {
-    val descendants: Set[TableName] = model.fileIndex.filter(from).getTableNames.flatMap{getAllDescendants(_)}
-    val ascendants: Set[TableName] = model.fileIndex.filter(to).getTableNames.flatMap{getAllAscendants(_)}
-    val both: Set[TableName] = descendants.intersect(ascendants)
+    val fromSet: Set[TableName] = model.fileIndex.filter(from).getTableNames
+    val toSet: Set[TableName] = model.fileIndex.filter(to).getTableNames
+    val afterFrom: Set[TableName] = cycleProofTraversal(fromSet, toSet, TraversalDirection.Successors)
+    val beforeTo: Set[TableName] = cycleProofTraversal(toSet, fromSet, TraversalDirection.Predecessors)
+    val both: Set[TableName] = afterFrom.intersect(beforeTo)
     val res = this.filter{i => both.exists{_==i}}
     res.graph.findCycle match {
       case Some(cycle) => throw new TableGraphException(s"A cycle was found: $cycle. Using --from and --to that produces a cycle is forbidden.")
@@ -254,7 +320,7 @@ class TableGraph private(
     }
   }
 
-  def subGraphWithParents(itemArgs: ItemArgs): TableGraph = {
+  private def subGraphWithParents(itemArgs: ItemArgs): TableGraph = {
     val tables = this.subGraph(itemArgs).vertices
     val parents: Seq[TableName] = recursivelyAddViewsParents(this.getParents(tables), Set())
     val nonViewParents: Set[String] =
@@ -289,7 +355,7 @@ class TableGraph private(
     *
     * @param items
     */
-  def checkNoMissingTable(items: Seq[ItemName]): Unit = {
+  private def checkNoMissingTable(items: Seq[ItemName]): Unit = {
     val tableNames: Seq[TableName] = vertices
     val itemFilter = new ItemFilter(items,acceptIfEmpty=false)
     for (v <- tableNames) {
@@ -401,6 +467,39 @@ class TableGraph private(
   }
 
   override def toString: String = f"TableGraph(${graph.toString()}})"
+
+
+  /**
+    * The direction in which we can traverse the graph.
+    * Implementation must provide a neighbors function that
+    * for a given vertex return the list of neighbors in the associated traversal direction.
+    */
+  trait TraversalDirection {
+
+    def neighbors(v: TableName): Traversable[TableName]
+
+  }
+
+  object TraversalDirection {
+
+    object Predecessors extends TraversalDirection {
+
+      def neighbors(v: TableName): Traversable[TableName] = {
+        graph.getParents(v)
+      }
+
+    }
+
+    object Successors extends TraversalDirection {
+
+      def neighbors(v: TableName): Traversable[TableName] = {
+        graph.getChildren(v)
+      }
+
+    }
+
+  }
+
 }
 
 
@@ -434,7 +533,7 @@ object TableGraph {
     var graph: Graph[TableName, DiEdge] = Graph[TableName, DiEdge]()
 
     model.tables.foreach{
-      case td: TableInfo =>
+      td: TableInfo =>
         graph += TableName(td.fullName)
         graph ++= td.tableDeps.map{t => TableName(t.fullName) ~> TableName(td.fullName)}
     }
