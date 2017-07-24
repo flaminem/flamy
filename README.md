@@ -13,7 +13,7 @@ It is currently compatible with Hive and Spark-SQL, and is especially helpful wh
 
 ## Documentation
 
-See the [documentation](http://flamy.readthedocs.io/en/latest) for installation, configuration, usage instructions, and a tutorial.
+See the [documentation](http://flamy.readthedocs.io/en/latest/index.html) for installation, configuration, usage instructions, and a tutorial.
 
 
 ### Features
