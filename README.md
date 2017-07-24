@@ -4,7 +4,7 @@
 [![Build Status](https://api.travis-ci.org/flaminem/flamy.svg)](https://travis-ci.org/flaminem/flamy)
 
 
-Flamy is a tool to help organising, validating and running SQL queries and manage their dependencies.
+Flamy is a tool to help organizing, validating and running SQL queries and manage their dependencies.
 
 By analyzing queries, Flamy can find dependencies between tables, draw the dependency graph, and run the queries in the right order.
 It is also a great tool to quickly validate your hive queries without having to actually run them.
