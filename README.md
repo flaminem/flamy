@@ -2,7 +2,7 @@
 ### the database manager for Apache Hive
 
 [![Build Status](https://api.travis-ci.org/flaminem/flamy.svg)](https://travis-ci.org/flaminem/flamy)
-
+[![Docs](https://flamy.readthedocs.io/en/latest/?badge=latest)](https://readthedocs.org/projects/flamy/badge/?version=latest)
 
 Flamy is a tool to help organizing, validating and running SQL queries and manage their dependencies.
 
