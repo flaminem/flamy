@@ -36,8 +36,9 @@ class Export extends Subcommand("export") with FlamySubcommand {
     banner("Automatically generate a configuration template or doc")
     private lazy val template: ScallopOption[Boolean] = toggle(name = "template", default = Some(false), noshort = true)
     private lazy val markdown: ScallopOption[Boolean] = toggle(name = "markdown", default = Some(false), noshort = true)
+    private lazy val rst: ScallopOption[Boolean] = toggle(name = "rst", default = Some(false), noshort = true)
 
-    requireOne(template, markdown)
+    requireOne(template, markdown, rst)
 
     override def doCommand(globalOptions: FlamyGlobalOptions, subCommands: List[ScallopConf]): ReturnStatus = {
       val context = new FlamyContext(globalOptions, Some(Environment("<ENV>")))
@@ -46,6 +47,9 @@ class Export extends Subcommand("export") with FlamySubcommand {
       }
       else if(markdown()) {
         FlamyOutput.out.println(new FlamyContextFormatter(context).toMarkdown)
+      }
+      else if(rst()) {
+        FlamyOutput.out.println(new FlamyContextFormatter(context).toRST)
       }
       else {
         throw new UnexpectedBehaviorException("Either --template or --markdown option should be used")

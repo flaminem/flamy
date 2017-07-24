@@ -84,7 +84,7 @@ class FlamyGlobalConfVars { self =>
       varName = "regen.use.legacy",
       defaultValue = Some(false),
       validator = Validator.Required(),
-      description = "Use the old version of the regen"
+      description = "Use the old version of the regen."
     )
 
   object DYNAMIC_OUTPUT extends
@@ -92,7 +92,7 @@ class FlamyGlobalConfVars { self =>
       varName = "io.dynamic.output",
       defaultValue = Some(true),
       validator = Validator.Required(),
-      description = "(experimental feature) The run and regen commands will use a dynamic output, instead of a static output. " +
+      description = "The run and regen commands will use a dynamic output, instead of a static output. " +
         "Only work with terminals supporting ANSI escape codes."
     )
 
@@ -120,7 +120,7 @@ class FlamyGlobalConfVars { self =>
       varName = "auto.open.multi",
       defaultValue = Some(SystemContext.osFamily.isMultiOpenSuported),
       validator = Validator.Required(),
-      description = "In addition with auto.open.command, this boolean flag indicates if multiple files should be open simultaneously"
+      description = "In addition with auto.open.command, this boolean flag indicates if multiple files should be open simultaneously."
     )
 
   object VERBOSITY_LEVEL extends

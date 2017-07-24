@@ -96,7 +96,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       varName = "udf.classpath",
       defaultValue = None,
       validator = Validator.Optional(),
-      description = "list of jar paths (separated with ':') where flamy will look for the custom Hive UDFs. " +
+      description = "List of jar paths (separated with ':') where flamy will look for the custom Hive UDFs. " +
         "Don't forget to also add them as CREATE TEMPORARY FUNCTION in the model's presets file."
     )
 
@@ -166,7 +166,7 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
       varName = "hive.meta.fetcher.type",
       defaultValue = Some("default"),
       validator = Validator.In(Seq("direct", "client", "default")),
-      description = "The implementation used to retreive metatada from Hive ('client' or 'direct')."
+      description = "The implementation used to retrieve metadata from Hive ('client' or 'direct')."
     )
 
   object HIVE_METASTORE_URI extends
