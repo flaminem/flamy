@@ -104,3 +104,8 @@ When running flamy, you can add extra java options to your environment, for exam
 export FLAMY_EXTRA_JAVA_OPTIONS="-Xmx512m"
 ```
 
+### Contact
+
+pin.furcy@gmail.com
+
+
