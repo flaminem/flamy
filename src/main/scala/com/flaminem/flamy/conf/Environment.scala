@@ -40,7 +40,8 @@ object Environment {
       override def parse(args: List[(String, List[String])]): Either[String, Option[Environment]] = {
         args match {
           case (_, a::Nil)::Nil => Right(Some(Environment(a)))
-          case x => Left("")
+          case Nil => Right(None)
+          case _ => Left("")
         }
       }
       override val tag: TypeTag[Environment] = typeTag[Environment]
