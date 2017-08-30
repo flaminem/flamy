@@ -66,13 +66,19 @@ object ModelSparkContext {
     _spark
   }
 
+  def getSparkSQLContext(context: FlamyContext): SQLContext = {
+    val sqlContext: SQLContext = ModelSparkContext.spark(context).sqlContext.newSession()
+    runPresets(sqlContext, context)
+    sqlContext
+  }
+
   private def addUDFJars(sqlContext: SQLContext, context: FlamyContext): Unit = {
     context.getUdfJarPaths.foreach{
       path => sqlContext.sql(s"ADD JAR $path")
     }
   }
 
-  def runPresets(sqlContext: SQLContext, context: FlamyContext): Unit = {
+  private def runPresets(sqlContext: SQLContext, context: FlamyContext): Unit = {
     addUDFJars(sqlContext, context)
     context.HIVE_PRESETS_PATH.getProperty match {
       case Some(path) =>
