@@ -38,7 +38,9 @@ object SchemaName {
 
   def apply(fullName: String): SchemaName = {
     parse(fullName).getOrElse{
-      throw new IllegalArgumentException(s"$fullName is not a correct SchemaName")
+      throw new IllegalArgumentException(
+        s"$fullName is not a valid name for schemas. Valid names only contain alphabet characters, numbers and _."
+      )
     }
   }
 
