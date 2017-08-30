@@ -24,7 +24,7 @@ import com.flaminem.flamy.utils.logging.Logging
 import com.flaminem.flamy.utils.sql.ResultRow
 import com.flaminem.flamy.utils.sql.hive.StreamedResultSet
 
-object RemoteHiveRunner{
+object RemoteHiveRunner {
   private val HIVE_SERVER2_DRIVER: String = "org.apache.hive.jdbc.HiveDriver"
 
 }
