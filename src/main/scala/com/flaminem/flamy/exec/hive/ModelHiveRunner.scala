@@ -92,11 +92,7 @@ class ModelHiveRunner(override val context: FlamyContext) extends HiveRunner(con
     */
   def getConfiguration(key: String): Option[String] = {
     val conf: HiveConf = modelHiveContext.hiveConf
-    for {
-      value <- Option(conf.get(key))
-    } yield {
-      value
-    }
+    Option(conf.get(key))
   }
 
   override def close(): Unit = () //sessionState.close()
