@@ -63,17 +63,17 @@ object ModelHiveContext extends Logging {
   private var resetCounter: Int = 0
 
   def localMetastore(context: FlamyContext): String = {
-    FlamyGlobalContext.getRunDir + "/" + LOCAL_METASTORE + "_" + resetCounter
+    FlamyGlobalContext.getUniqueRunDir + "/" + LOCAL_METASTORE + "_" + resetCounter
   }
 
   def localWarehouse(context: FlamyContext): String = {
-    FlamyGlobalContext.getRunDir + "/" + LOCAL_WAREHOUSE + "_" + resetCounter
+    FlamyGlobalContext.getUniqueRunDir + "/" + LOCAL_WAREHOUSE + "_" + resetCounter
   }
 
   private def createHeavyConf(context: FlamyContext): HiveConf = {
     val hiveConf = new HiveConf(classOf[Hive])
     hiveConf.setBoolean("hive.stats.autogather", false)
-    hiveConf.set("derby.stream.error.file", FlamyGlobalContext.getRunDir + "/" + LOCAL_DERBY_LOG)
+    hiveConf.set("derby.stream.error.file", FlamyGlobalContext.getUniqueRunDir + "/" + LOCAL_DERBY_LOG)
     hiveConf.set("javax.jdo.option.ConnectionURL", "jdbc:derby:;databaseName=" + localMetastore(context) + ";create=true")
     hiveConf.set("hive.metastore.warehouse.dir", localWarehouse(context))
     hiveConf.set("hive.jar.path", ClassUtil.findContainingJar(classOf[Hive]))

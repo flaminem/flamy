@@ -37,12 +37,16 @@ object FlamyGlobalContext extends FlamyGlobalConfVars {
   def init(conf: Config): Unit = {
     this.conf = conf
     confVars.foreach{_.resetCachedValue()}
-    setLogFolder(getRunDir + "/logs")
+    setLogFolder(getUniqueRunDir + "/logs")
   }
 
   def getLogFolder: String = logFolderPath
 
-  def getRunDir: String = {
+  /**
+    * Each flamy command creates a new unique working directory, in order to isolate contexts.
+    * @return
+    */
+  def getUniqueRunDir: String = {
     RUN_DIR.getProperty + "/" + FlamyContext.processId
   }
 

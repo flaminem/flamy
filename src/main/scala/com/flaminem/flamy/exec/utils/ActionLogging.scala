@@ -27,7 +27,7 @@ import org.apache.hadoop.fs.FileSystem
 trait ActionLogging[A <: Action] extends ParallelActionRunner[A]{
 
   private val LOG_PATH: String = "/../logs.csv"
-  private val log: PrintStream = new ConcurrentFilePrintStream(new File(FlamyGlobalContext.getRunDir + LOG_PATH), FileSystem.get(new Configuration), true)
+  private val log: PrintStream = new ConcurrentFilePrintStream(new File(FlamyGlobalContext.getUniqueRunDir + LOG_PATH), FileSystem.get(new Configuration), true)
 
   private def log(v: Action, running: Status) {
     val row = Seq(System.currentTimeMillis, context.getProject, context.getEnvironment, context.dryRun, v.name, running)

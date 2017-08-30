@@ -36,11 +36,11 @@ object ModelSparkContext {
   private var sparkConf: SparkConf = _
 
   def localMetastore(context: FlamyContext): String = {
-    FlamyGlobalContext.getRunDir + "/" + LOCAL_METASTORE
+    FlamyGlobalContext.getUniqueRunDir + "/" + LOCAL_METASTORE
   }
 
   def localWarehouse(context: FlamyContext): String = {
-    FlamyGlobalContext.getRunDir + "/" + LOCAL_WAREHOUSE
+    FlamyGlobalContext.getUniqueRunDir + "/" + LOCAL_WAREHOUSE
   }
 
 
@@ -49,7 +49,7 @@ object ModelSparkContext {
       .setAppName(Flamy.name)
       .setMaster("local")
       .set("spark.sql.crossJoin.enabled", "true")
-      .set("derby.stream.error.file", FlamyGlobalContext.getRunDir + "/" + LOCAL_DERBY_LOG)
+      .set("derby.stream.error.file", FlamyGlobalContext.getUniqueRunDir + "/" + LOCAL_DERBY_LOG)
       .set("javax.jdo.option.ConnectionURL", "jdbc:derby:;databaseName=" + localMetastore(context) + ";create=true")
       .set("hive.metastore.warehouse.dir", localWarehouse(context))
   }
