@@ -16,7 +16,7 @@
 
 package com.flaminem.flamy.exec.hive
 
-import com.flaminem.flamy.conf.{FlamyConfVars, FlamyContext}
+import com.flaminem.flamy.conf.{Environment, FlamyConfVars, FlamyContext}
 import com.flaminem.flamy.model.exceptions.FlamyException
 import org.apache.hadoop.hive.ql.exec.FunctionUtils
 import org.apache.hadoop.hive.ql.exec.FunctionUtils.UDFClassType
@@ -48,7 +48,7 @@ trait HiveFunctionFetcher {
 object HiveFunctionFetcher {
 
   def apply(context: FlamyContext): ModelHiveFunctionFetcher = {
-    if(context.env == FlamyConfVars.MODEL_ENV) {
+    if(context.env == Environment.MODEL_ENV) {
       new ModelHiveFunctionFetcher(context)
     }
     else{

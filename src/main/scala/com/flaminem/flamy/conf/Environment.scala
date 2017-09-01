@@ -35,6 +35,8 @@ case class Environment(name: String) {
 
 object Environment {
 
+  val MODEL_ENV: Environment = Environment("model")
+
   implicit val scallopConverter: ValueConverter[Environment] = {
     new ValueConverter[Environment] {
       override def parse(args: List[(String, List[String])]): Either[String, Option[Environment]] = {

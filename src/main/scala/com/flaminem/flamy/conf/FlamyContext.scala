@@ -92,7 +92,7 @@ class FlamyContext private (
 extends FlamyConfVars(env, FlamyContext.loadConf(propertiesFileUrl, globalOptions.conf)) with Logging {
 
   def this(globalOptions: FlamyGlobalOptions, env: Option[Environment]) = {
-    this(globalOptions, env.getOrElse(FlamyConfVars.MODEL_ENV), FlamyContext.getPropertyURL(globalOptions.configFile))
+    this(globalOptions, env.getOrElse(Environment.MODEL_ENV), FlamyContext.getPropertyURL(globalOptions.configFile))
   }
 
   def this(project: String, environment: Environment) = {
@@ -100,7 +100,7 @@ extends FlamyConfVars(env, FlamyContext.loadConf(propertiesFileUrl, globalOption
   }
 
   def this(globalOptions: FlamyGlobalOptions) = {
-    this(globalOptions, FlamyConfVars.MODEL_ENV, FlamyContext.getPropertyURL(globalOptions.configFile))
+    this(globalOptions, Environment.MODEL_ENV, FlamyContext.getPropertyURL(globalOptions.configFile))
   }
 
   def this(properties: (String, String)*) = {

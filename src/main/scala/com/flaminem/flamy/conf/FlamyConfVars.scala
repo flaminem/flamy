@@ -27,7 +27,7 @@ import scala.collection.JavaConversions._
 import scala.reflect.runtime.universe._
 
 object FlamyConfVars {
-  val MODEL_ENV: Environment = Environment("model")
+
   val CONF_PATH: String = "flamy.properties"
   val ENV_PREFIX : String = "env"
 }

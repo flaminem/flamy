@@ -16,7 +16,7 @@
 
 package com.flaminem.flamy.exec.hive
 
-import com.flaminem.flamy.conf.{FlamyConfVars, FlamyContext}
+import com.flaminem.flamy.conf.{Environment, FlamyConfVars, FlamyContext}
 import com.flaminem.flamy.model._
 import com.flaminem.flamy.model.metadata.{SchemaWithInfo, TableWithInfo}
 import com.flaminem.flamy.model.names.{ItemName, SchemaName, TableName}
@@ -86,7 +86,7 @@ object HiveTableFetcher extends Logging{
    * @return
    */
   def apply(context: FlamyContext): HiveTableFetcher = context.getEnvironment match {
-    case FlamyConfVars.MODEL_ENV => new ModelHiveTableFetcher(context)
+    case Environment.MODEL_ENV => new ModelHiveTableFetcher(context)
     case _ => HivePartitionFetcher(context)
   }
 
