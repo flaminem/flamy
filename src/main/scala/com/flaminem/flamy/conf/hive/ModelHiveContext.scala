@@ -18,10 +18,13 @@ package com.flaminem.flamy.conf.hive
 
 import java.io.{File, IOException}
 
-import com.flaminem.flamy.conf.{FlamyContext, FlamyGlobalContext}
+import com.flaminem.flamy.conf._
+import com.flaminem.flamy.exec.utils.io.FlamyOutput
 import com.flaminem.flamy.model.exceptions.FailedQueryException
 import com.flaminem.flamy.utils.FileUtils
 import com.flaminem.flamy.utils.logging.Logging
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.cli.CliSessionState
 import org.apache.hadoop.hive.conf.HiveConf
 import org.apache.hadoop.hive.ql.Context
@@ -70,16 +73,48 @@ object ModelHiveContext extends Logging {
     FlamyGlobalContext.getUniqueRunDir + "/" + LOCAL_WAREHOUSE + "_" + resetCounter
   }
 
+  /**
+    * For environments other than the model one, if the file "conf/$env/hive-site.xml" exists,
+    * we load it into the hive configuration.
+    * @param hiveConf
+    * @param context
+    */
+  private def addEnvConf(hiveConf: HiveConf, context: FlamyContext): Unit = {
+    if(context.env != Environment.MODEL_ENV) {
+      val fs = context.getLocalFileSystem
+      val configFiles: Seq[Path] =
+        fs.listVisibleFiles(new Path(context.propertiesFileUrl.toString).getParent.suffix(s"/${context.env}"))
+          .filter{_.getName.endsWith("-site.xml")}
+      for {
+        configFile <- configFiles
+      }
+        hiveConf.addResource(configFile)
+    }
+  }
+
   private def createHeavyConf(context: FlamyContext): HiveConf = {
     val hiveConf = new HiveConf(classOf[Hive])
+
+    /* We unset this property to make sure that the user correctly sets it */
+    hiveConf.unset("javax.jdo.option.ConnectionURL")
+
+    addEnvConf(hiveConf, context)
     hiveConf.setBoolean("hive.stats.autogather", false)
     hiveConf.set("derby.stream.error.file", FlamyGlobalContext.getUniqueRunDir + "/" + LOCAL_DERBY_LOG)
-    hiveConf.set("javax.jdo.option.ConnectionURL", "jdbc:derby:;databaseName=" + localMetastore(context) + ";create=true")
     hiveConf.set("hive.metastore.warehouse.dir", localWarehouse(context))
     hiveConf.set("hive.jar.path", ClassUtil.findContainingJar(classOf[Hive]))
     hiveConf.set("mapreduce.map.log.level", "ERROR")
     hiveConf.set("mapreduce.reduce.log.level", "ERROR")
     hiveConf.setBoolean("hive.metastore.try.direct.sql", false)
+    if(context.env == Environment.MODEL_ENV) {
+      hiveConf.set("javax.jdo.option.ConnectionURL", "jdbc:derby:;databaseName=" + localMetastore(context) + ";create=true")
+    }
+    if(Option(hiveConf.get("javax.jdo.option.ConnectionURL")).isEmpty){
+      throw new ConfigurationException(
+        s"Please set the configuration property 'javax.jdo.option.ConnectionURL' in ${context.env}/hive-site.xml," +
+          s" in the same directory as ${Flamy.name}'s configuration file."
+      )
+    }
     hiveConf
   }
 

@@ -19,7 +19,7 @@ package com.flaminem.flamy.exec.hive
 import java.io.File
 import java.sql.SQLException
 
-import com.flaminem.flamy.conf.FlamyContext
+import com.flaminem.flamy.conf.{Environment, FlamyConfVars, FlamyContext}
 import com.flaminem.flamy.exec.files.{FileRunner, ItemFileAction}
 import com.flaminem.flamy.exec.utils.Action
 import com.flaminem.flamy.exec.utils.io.FlamyOutput
@@ -337,5 +337,25 @@ abstract class HiveRunner(val context: FlamyContext) extends AutoCloseable {
   def close(): Unit
 
   def interrupt(): Unit
+
+}
+
+
+object HiveRunner {
+
+  def apply(context: FlamyContext): HiveRunner = {
+    val runner: HiveRunner =
+      if (context.env == Environment.MODEL_ENV) {
+        new ModelHiveRunner(context)
+      }
+      else if (context.HIVE_RUNNER_TYPE.getProperty.toLowerCase == "local") {
+        new LocalHiveRunner(context)
+      }
+      else {
+          new RemoteHiveRunner(context)
+        }
+      runner.runPresets(context)
+    runner
+  }
 
 }

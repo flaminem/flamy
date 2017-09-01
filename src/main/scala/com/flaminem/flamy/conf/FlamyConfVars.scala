@@ -133,6 +133,18 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
   // Environment properties //
   ////////////////////////////
 
+  object HIVE_RUNNER_TYPE extends
+    ConfVar[String](
+      confLevel = Env,
+      varName = "hive.runner.type",
+      defaultValue = Some("remote"),
+      validator = Validator.Required(),
+      description = "Specify how flamy will run the Hive queries. Either 'remote' or 'local'. " +
+        "In 'remote' mode, flamy will send the query to a HiveServer2 via jdbc. This is the default behavior." +
+        "The 'local' mode is useful if you have a persistent metastore database but no persistent HiveServer2," +
+        "which can happen in some AWS deployments. Please refer to the flamy's documentation for more information."
+    )
+
   object HIVE_SERVER_URI extends
     ConfVar[String](
       confLevel = Env,

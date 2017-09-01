@@ -120,15 +120,7 @@ object FlamyRunner {
   @throws(classOf[FlamyException])
   def apply(context: FlamyContext): FlamyRunner = {
     try {
-      val runner: HiveRunner =
-        if (context.env == FlamyConfVars.MODEL_ENV) {
-          new ModelHiveRunner(context)
-        }
-        else {
-          new RemoteHiveRunner(context)
-        }
-      runner.runPresets(context)
-      new FlamyRunner(runner)
+      new FlamyRunner(HiveRunner(context))
     }
     catch {
       case e: InterruptedException =>
