@@ -26,7 +26,7 @@ import scala.language.implicitConversions
 /**
  * Created by fpin on 10/26/14.
  */
-class Launcher$Test extends FreeSpec with Matchers with BeforeAndAfterEach{
+class Launcher$Test extends FreeSpec with Matchers with BeforeAndAfterEach {
 
   implicit def stringToArray(s: String): Array[String] = s.split("\\s+")
 
