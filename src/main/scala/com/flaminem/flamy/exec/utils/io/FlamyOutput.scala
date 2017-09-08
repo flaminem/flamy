@@ -143,7 +143,9 @@ object FlamyOutput {
     }
 
     def println(s: => String): Unit = {
-      stream.println(s)
+      if(logLevel != SILENT){
+        stream.println(s)
+      }
     }
 
     def println(s: => String, color: Color): Unit = {
