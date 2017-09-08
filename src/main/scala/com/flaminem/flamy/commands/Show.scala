@@ -92,7 +92,7 @@ class Show extends Subcommand("show") with FlamySubcommand with Logging {
 
     codependent(from, to)
     conflicts(items, List(from, to))
-    /* options '--from' and '--to' cannot be used with '--on ENV' as we may have discrespancies between the model and the environment */
+    /* options '--from' and '--to' cannot be used with '--on ENV' as we may have discrepancies between the model and the environment */
     conflicts(environment, List(from, to))
 
     override def doCommand(globalOptions: FlamyGlobalOptions, subCommands: List[ScallopConf]): ReturnStatus = {
@@ -100,7 +100,7 @@ class Show extends Subcommand("show") with FlamySubcommand with Logging {
       val tables: Seq[TableName] =
         ItemArgs(items(), from(), to()) match {
           case ItemList(l) =>
-            val itemFilter = new ItemFilter(l, true)
+            val itemFilter = ItemFilter(l, acceptIfEmpty = true)
             val fetcher = HiveTableFetcher(context)
             fetcher.listTableNames(itemFilter).toSeq
           case itemArgs : ItemRange =>
@@ -114,7 +114,7 @@ class Show extends Subcommand("show") with FlamySubcommand with Logging {
       val header = s"Found ${tables.size} tables in ${schemas.size} schemas"
       if(formatted()){
         val res = Tabulator.format(Seq(header) +: tables.sorted.map{Seq(_)}, leftJustify = true)
-        println(res)
+        FlamyOutput.out.println(res)
       }
       else {
         val sb = new StringBuilder(s"$header :")
@@ -124,11 +124,12 @@ class Show extends Subcommand("show") with FlamySubcommand with Logging {
             sb.append("\n        - " + table.name)
           }
         }
-        println(sb)
+        FlamyOutput.out.println(sb.toString())
       }
       ReturnSuccess
     }
   }
+
   val partitions = new Subcommand("partitions") with FlamySubcommand {
     banner("Show partitions in schemas and tables")
 
