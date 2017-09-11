@@ -119,7 +119,7 @@ class Push extends Subcommand("push") with FlamySubcommand {
       val destTables: TableInfoCollection = TableInfoCollection(destFetcher.listTables{itemFilter}.toSeq:_*)
       val tablesToPush: Seq[String] = sourceTables.toSet.intersect(destTables.toSet).toSeq.map{_.fullName}
 
-      val runner = new ActionRunner()
+      val runner = new ActionRunner(silentOnSuccess = false, silentOnFailure = false)
       def renameTableColsAction(table: TableName): Option[Action] = {
         val sourceTable: TableInfo = sourceTables.get(table).get
         val destTable: TableInfo = destTables.get(table).get
@@ -145,7 +145,7 @@ class Push extends Subcommand("push") with FlamySubcommand {
                   statements.foreach{ThreadPrintStream.systemOut.println}
                 }
                 else {
-                  statements.foreach{flamyRunner.runText(_)}
+                  statements.foreach{flamyRunner.runText}
                 }
               }
             }
