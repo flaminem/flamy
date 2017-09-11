@@ -144,7 +144,7 @@ class OptionCompleter(handler: CandidateListCompletionHandler, rootContext: Flam
 
   private def getSubCommands(builder: Scallop): Seq[String] = {
     for {
-      (name, sub) <- builder.subbuilders
+      (name, sub: Scallop) <- builder.subbuilders
       if !sub.shortSubcommandsHelp
     } yield {
       name
