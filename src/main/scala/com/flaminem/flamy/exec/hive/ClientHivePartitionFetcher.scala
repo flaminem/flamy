@@ -76,7 +76,7 @@ class ClientHivePartitionFetcher(context: FlamyContext) extends HivePartitionFet
   }
 
   override def getTable(t: TableName): Option[TableInfo] = {
-    Option(cli.getTable(t.schemaName, t.name)).map{new TableInfo(_)}
+    Option(cli.getTable(t.schemaName, t.name)).map{TableInfo(_)}
   }
 
   override def listPartitionNames(table: TableName): List[TablePartitionName] = {

@@ -51,15 +51,6 @@ class TableInfo (
 
   def schemaName: SchemaName = tableName.schemaName
 
-  def this(table: org.apache.hadoop.hive.metastore.api.Table) {
-    this(
-      TableType.REMOTE,
-      TableName(table.getDbName, table.getTableName),
-      table.getSd.getCols.map{new Column(_)},
-      table.getPartitionKeys.map{fieldSchema => new PartitionKey(new Column(fieldSchema))}
-    )
-  }
-
   override def toString: String = {
     if (columns.isEmpty && partitions.isEmpty && tableDeps.isEmpty) {
       fullName
@@ -146,6 +137,22 @@ object TableInfo {
     assert(td.schemaName.isDefined, s"Please report a bug: the following table should have a schemaName: $td")
     val tableDeps = getTableDependencies(td)
     new TableInfo(td.tableType, TableName(td.schemaName.get, td.tableName), td.columns, td.partitionKeys, tableDeps, Nil)
+  }
+
+  def apply(table: org.apache.hadoop.hive.metastore.api.Table): TableInfo = {
+    val tableType: TableType =
+      if(table.getTableType == "VIRTUAL_VIEW") {
+        TableType.VIEW
+      }
+      else {
+        TableType.REMOTE
+      }
+    new TableInfo (
+      tableType,
+      TableName(table.getDbName, table.getTableName),
+      table.getSd.getCols.map{new Column(_)},
+      table.getPartitionKeys.map{fieldSchema => new PartitionKey(new Column(fieldSchema))}
+    )
   }
 
 }
