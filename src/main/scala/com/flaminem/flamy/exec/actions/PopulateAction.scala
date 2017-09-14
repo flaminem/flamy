@@ -14,8 +14,9 @@
  *
  */
 
-package com.flaminem.flamy.exec.utils
+package com.flaminem.flamy.exec.actions
 
+import com.flaminem.flamy.exec.utils.Action
 import com.flaminem.flamy.model.PopulateInfo
 import com.flaminem.flamy.model.names.TableName
 import com.flaminem.flamy.utils.ordering.OrderingUtils

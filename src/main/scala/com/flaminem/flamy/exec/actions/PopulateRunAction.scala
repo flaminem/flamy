@@ -14,61 +14,15 @@
  *
  */
 
-package com.flaminem.flamy.exec.run
+package com.flaminem.flamy.exec.actions
 
 import com.flaminem.flamy.conf.{FlamyContext, FlamyGlobalContext}
 import com.flaminem.flamy.exec.FlamyRunner
-import com.flaminem.flamy.exec.utils.{Action, PopulateAction, SkipAction}
 import com.flaminem.flamy.model.{Inputs, PopulateInfo}
 import com.flaminem.flamy.model.names.TableName
 import com.flaminem.flamy.parsing.hive.QueryUtils
 import com.flaminem.flamy.parsing.hive.run.RunActionParser
 import com.flaminem.flamy.utils.AutoClose
-
-/**
-  * A RunAction is an action run by the GraphRunner.
-  * It may be a PopulateRunAction, or a SkipRunAction when there is no Populate to run.
-  */
-trait RunAction extends Action {
-
-  def tableName: TableName
-
-  override def toString: String = name
-
-}
-
-object RunAction {
-
-  /**
-    * A default ordering for RunAction.
-    * SkipActions come first
-    * @tparam A
-    * @return
-    */
-  implicit def ordering[A <: RunAction]: Ordering[A] = {
-    new Ordering[A] {
-      override def compare(x: A, y: A): Int = {
-        (x, y) match {
-          case (l:SkipAction, r:PopulateAction) => -1
-          case (l:PopulateAction, r:SkipAction) => 1
-          case (l:PopulateAction, r:PopulateAction) => PopulateAction.ordering.compare(l, r)
-          case (l, r) => Action.ordering.compare(l, r)
-        }
-      }
-    }
-  }
-
-}
-
-class SkipRunAction(
-  val tableName: TableName
-) extends RunAction with SkipAction {
-
-  override val name: String = tableName.fullName
-  override val logPath: String = ""
-
-}
-
 
 class PopulateRunAction (
   val tableName: TableName,
