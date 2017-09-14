@@ -161,6 +161,7 @@ object Launcher {
   class Commands(args: Seq[String]) extends Options(args) {
 
     val show = new commands.Show
+    val drop = new commands.Drop
     val diff = new commands.Diff
     val describe = new commands.Describe
     val check = new commands.Check
