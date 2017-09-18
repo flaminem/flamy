@@ -37,7 +37,7 @@ import scala.language.reflectiveCalls
  */
 class Describe extends Subcommand("describe") with FlamySubcommand with Logging {
 
-  val schemas = new Subcommand("schemas") with FlamySubcommand {
+  val schemas: Subcommand = new Subcommand("schemas") with FlamySubcommand {
     banner("List all schemas with their properties (schema, num_tables, size, num_files, modification_time)")
     val environment: ScallopOption[Environment] =
       opt(name="on", descr="Specifies environment to run on", required=true, noshort=true)
@@ -55,7 +55,7 @@ class Describe extends Subcommand("describe") with FlamySubcommand with Logging 
     }
   }
 
-  val tables = new Subcommand("tables") with FlamySubcommand {
+  val tables: Subcommand = new Subcommand("tables") with FlamySubcommand {
     banner("List all tables inside one or several schemas with their properties (table, num_partitions, size, num_files, modification_time, format)")
     val environment: ScallopOption[Environment] =
       opt(name="on", descr="Specifies environment to run on", required=true, noshort=true)
@@ -85,7 +85,7 @@ class Describe extends Subcommand("describe") with FlamySubcommand with Logging 
     }
   }
 
-  val partitions = new Subcommand("partitions") with FlamySubcommand {
+  val partitions: Subcommand = new Subcommand("partitions") with FlamySubcommand {
     banner("List all partitions inside one or several schemas and/or tables with their properties (<partition_keys*>, size, num_files, modification_time, format)")
     val environment: ScallopOption[Environment] =
       opt(name="on", descr="Specifies environment to run on", required=true, short='o')
