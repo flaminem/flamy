@@ -27,8 +27,9 @@ class ShellCompleter$Test extends FreeSpec {
     new FlamyContext(
       "flamy.model.dir.paths" -> "src/test/resources/test",
       "flamy.env.dev.hive.meta.fetcher" -> "direct",
-      "flamy.env.prod.hive.meta.fetcher" -> "direct"
+      "flamy.env.test.hive.meta.fetcher" -> "direct"
     )
+
   context.dryRun = true
   val shellCompleter: ShellCompleter = new ShellCompleter(context)
 
@@ -94,7 +95,7 @@ class ShellCompleter$Test extends FreeSpec {
       val candidates = new java.util.ArrayList[CharSequence]()
       val index = shellCompleter.complete("describe tables --on ", 21, candidates)
       assert(index === 21)
-      assert(candidates.toSeq === Seq("dev", "prod"))
+      assert(candidates.toSeq === Seq("dev", "test"))
     }
 
     "describe tables --on d" in {
