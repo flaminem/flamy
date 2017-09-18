@@ -221,11 +221,15 @@ class FlamyConfVars(val env: Environment, val conf: Config) extends Logging { se
     conf.root().entrySet().foreach{ entry => logger.info(entry.getKey + " = " + entry.getValue) }
   }
 
+  /**
+    * Get all the environment defined in the configuration, except the model environment.
+    * @return
+    */
   def getPossibleEnvironments: List[Environment] = {
     if(conf.hasPath(s"${Flamy.name}$projectString.$ENV_PREFIX")){
       conf.getConfig(s"${Flamy.name}$projectString.$ENV_PREFIX")
         .root().entrySet().toList
-        .map{_.getKey}.map{Environment(_)}
+        .map{_.getKey}.map{Environment(_)}.filterNot{_ == Environment.MODEL_ENV}
     }
     else {
       Nil
