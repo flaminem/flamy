@@ -15,7 +15,8 @@ lazy val flamy =
   (project in file("."))
   .dependsOn(macros)
   .aggregate(macros)
-  .settings(commonSettings)
+  .settings(commonSettings, Defaults.itSettings)
+  .configs(IntegrationTest)
 
 scalacOptions in Compile ++= Seq("-unchecked",  "-deprecation",  "-feature")
 
@@ -27,11 +28,5 @@ mappings in Universal ++= directory("sbin")
 
 mainClass in Compile := Some("com.flaminem.flamy.Launcher")
 
-parallelExecution in Test := false
-
-javaOptions in Test += "-XX:MaxPermSize=1G -XX:MaxMetaspaceSize=1G"
-
 mappings in (Compile, packageDoc) := Seq()
-
-fork in Test := true
 

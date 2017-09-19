@@ -14,32 +14,19 @@
  *
  */
 
-package com.flaminem.exec.hive
+package com.flaminem
 
 import com.flaminem.flamy.Launcher
-import com.flaminem.flamy.conf.{Environment, FlamyContext, FlamyGlobalOptions}
-import com.flaminem.flamy.exec.hive.{ClientHivePartitionFetcher, HivePartitionFetcher}
 import com.flaminem.flamy.exec.utils.ReturnStatus
 import com.flaminem.flamy.utils.CliUtils
-import org.apache.hadoop.fs.Path
 import org.scalatest._
 
-class ClientHiveTableFetcherTest extends FreeSpec with Matchers with BeforeAndAfterAll {
+class LauncherRemoteSuite extends FreeSpec with BeforeAndAfterAll {
 
   def launch(line: String): ReturnStatus = {
     val args: Array[String] = CliUtils.split(line).filter{_.nonEmpty}.toArray
     Launcher.launch(args)
   }
-
-  val context = new FlamyContext(
-    new FlamyGlobalOptions(
-      conf = Map(
-        "flamy.model.dir.paths" -> "src/it/resources/ClientHivePartitionFetcher"
-      )
-    ),
-    env = Some(Environment("test"))
-  )
-
 
   override def beforeAll(): Unit = {
     launch("drop tables --on test --all")
@@ -49,15 +36,38 @@ class ClientHiveTableFetcherTest extends FreeSpec with Matchers with BeforeAndAf
     launch("repair tables --on test")
   }
 
-  "ClientHivePartitionFetcher" - {
+  "show schemas --on test" in {
+    assert(launch("show schemas --on test").isSuccess)
+  }
+  "show tables --on test" in {
+    assert(launch("show tables --on test").isSuccess)
+  }
+  "show partitions --on test" in {
+    assert(launch("show partitions --on test").isSuccess)
+  }
 
-    "listTableNames" in {
-      val fetcher = HivePartitionFetcher(context)
-      assert(fetcher.isInstanceOf[ClientHivePartitionFetcher])
-      val tables = fetcher.listTableNames
-      assert(tables.size == 6)
-    }
 
+  "describe schemas --on test" in {
+    assert(launch("describe schemas --on test").isSuccess)
+  }
+  "describe tables --on test" in {
+    assert(launch("describe tables --on test").isSuccess)
+  }
+  "describe partitions --on test" in {
+    assert(launch("describe partitions --on test").isSuccess)
+  }
+
+
+  "check long --on test" in {
+    assert(launch("check long --on test").isSuccess)
+  }
+
+
+  "run --on test" in {
+    assert(launch("run --on test db_dest").isSuccess)
+  }
+  "run --on test --from --to" in {
+    assert(launch("run --on test --from db_dest --to db_dest").isSuccess)
   }
 
 }

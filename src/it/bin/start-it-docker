@@ -1,0 +1,11 @@
+#!/bin/bash
+# Reference: http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+docker run -d --rm --name flamy-it -e USER=`id -u -n` -e USER_ID=`id -u`  \
+-v $DIR/data:/data/hive -p 127.0.0.1:9083:9083 -p 127.0.0.1:4050:4040 -p 127.0.0.1:10000:10000 \
+--entrypoint /start.sh docker-hive-spark
+
+
+
+

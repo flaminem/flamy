@@ -17,12 +17,15 @@
 package com.flaminem.flamy.conf.hive
 
 import java.io.{File, IOException}
+import java.net.{URL, URLDecoder}
 
+import com.flaminem.flamy.commands.Drop
 import com.flaminem.flamy.conf._
 import com.flaminem.flamy.exec.utils.io.FlamyOutput
 import com.flaminem.flamy.model.exceptions.FailedQueryException
 import com.flaminem.flamy.utils.FileUtils
 import com.flaminem.flamy.utils.logging.Logging
+import com.flaminem.flamy.utils.sql.SimpleConnection
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.cli.CliSessionState
@@ -31,6 +34,7 @@ import org.apache.hadoop.hive.ql.Context
 import org.apache.hadoop.hive.ql.metadata.Hive
 import org.apache.hadoop.hive.ql.session.SessionState
 import org.apache.hadoop.util.ClassUtil
+import org.apache.hive.beeline.HiveSchemaTool
 
 /**
  * This creates the required HiveContext and SessionState used for running Hive in the model environment
@@ -90,6 +94,9 @@ object ModelHiveContext extends Logging {
       }
         hiveConf.addResource(configFile)
     }
+    else {
+      hiveConf.set("javax.jdo.option.ConnectionURL", "jdbc:derby:;create=true;databaseName=" + localMetastore(context))
+    }
   }
 
   private def createHeavyConf(context: FlamyContext): HiveConf = {
@@ -106,9 +113,10 @@ object ModelHiveContext extends Logging {
     hiveConf.set("mapreduce.map.log.level", "ERROR")
     hiveConf.set("mapreduce.reduce.log.level", "ERROR")
     hiveConf.setBoolean("hive.metastore.try.direct.sql", false)
-    if(context.env == Environment.MODEL_ENV) {
-      hiveConf.set("javax.jdo.option.ConnectionURL", "jdbc:derby:;databaseName=" + localMetastore(context) + ";create=true")
-    }
+    hiveConf.setBoolean("hive.metastore.fastpath", true)
+    hiveConf.setBoolean("datanucleus.schema.autoCreateAll", true)
+    hiveConf.setBoolean("hive.metastore.schema.verification", false)
+
     if(Option(hiveConf.get("javax.jdo.option.ConnectionURL")).isEmpty){
       throw new ConfigurationException(
         s"Please set the configuration property 'javax.jdo.option.ConnectionURL' in ${context.env}/hive-site.xml," +
@@ -120,6 +128,7 @@ object ModelHiveContext extends Logging {
 
   private def createLightConf(): HiveConf = {
     val hiveConf = new HiveConf()
+    hiveConf.setBoolean("hive.metastore.fastpath", true)
     hiveConf.set("_hive.hdfs.session.path", "test")
     hiveConf.set("_hive.local.session.path", "test")
     hiveConf
@@ -147,7 +156,7 @@ object ModelHiveContext extends Logging {
       }
     }
   }
-
+  
   def init(context: FlamyContext): Unit = {
     this.synchronized {
       if (!started) {
@@ -172,12 +181,15 @@ object ModelHiveContext extends Logging {
         case Some(modelHiveContext) => modelHiveContext
         case None =>
           logger.debug("Creating new heavy ModelHiveContext")
-          val hiveConf = createHeavyConf(context)
+          val hiveConf: HiveConf = createHeavyConf(context)
+
           val ss = new CliSessionState(hiveConf)
           ss.err = System.err
           ss.out = System.out
           ss.info = System.err
+
           SessionState.start(ss)
+
           val modelHiveSessionState = new ModelHiveContext(hiveConf,  new Context(hiveConf), Some(ss))
           threadLocalHeavyContext.set(modelHiveSessionState)
           logger.debug("heavy ModelHiveContext created")
@@ -186,7 +198,8 @@ object ModelHiveContext extends Logging {
     }
   }
 
-  private def removeThreadLocalContext(threadLocalContext: ThreadLocal[ModelHiveContext]) = {
+
+  private def removeThreadLocalContext(threadLocalContext: ThreadLocal[ModelHiveContext]): Unit = {
     Option(threadLocalContext.get()) match {
       case Some(modelHiveContext) =>
         modelHiveContext.close()
@@ -203,6 +216,7 @@ object ModelHiveContext extends Logging {
   def reset(): Unit = {
     this.synchronized {
       if(started){
+        logger.debug("resetting ModelHiveContext")
         resetCounter += 1
         SessionState.detachSession()
         removeThreadLocalContext(threadLocalLightContext)

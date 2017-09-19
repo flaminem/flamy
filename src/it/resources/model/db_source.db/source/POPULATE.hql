@@ -1,2 +1,1 @@
-use db_source;
-MSCK REPAIR TABLE source;
+MSCK REPAIR TABLE db_source.source;
