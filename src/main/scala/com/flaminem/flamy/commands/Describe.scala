@@ -104,17 +104,17 @@ class Describe extends Subcommand("describe") with FlamySubcommand with Logging 
           table: TableInfo <- fetcher.listTables(items: _*)
         } {
           if(table.isView){
-            println(s"${table.tableName} is a view")
+            FlamyOutput.out.println(s"${table.tableName} is a view")
           }
           else{
-            println(table.tableName)
+            FlamyOutput.out.println(table.tableName.toString)
             val nonRefreshedInfo = fetcher.getTablePartitioningInfo(table.tableName)
             logger.debug(s"refreshing file statuses for table ${table.tableName}")
             val tablePartitioningInfo: TablePartitioningInfo = nonRefreshedInfo.refreshAllFileStatus(context)
             logger.debug(s"file statuses refreshed for table ${table.tableName}")
-            println(tablePartitioningInfo.toFormattedString(context, humanReadable = !machineReadable()))
+            FlamyOutput.out.println(tablePartitioningInfo.toFormattedString(context, humanReadable = !machineReadable()))
           }
-          println()
+          FlamyOutput.out.println("")
         }
       }
       ReturnSuccess

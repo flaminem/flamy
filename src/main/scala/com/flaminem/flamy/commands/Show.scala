@@ -179,7 +179,7 @@ class Show extends Subcommand("show") with FlamySubcommand with Logging {
 
   val graph = new ShowGraph
 
-  val select = new Subcommand("select") with FlamySubcommand {
+  val select: Subcommand = new Subcommand("select") with FlamySubcommand {
     banner("Generate a select statement for the specified table")
     val environment: ScallopOption[Environment] =
       opt(name = "on", descr = "Specifies environment to run on", required = false, noshort = true)
@@ -214,7 +214,7 @@ class Show extends Subcommand("show") with FlamySubcommand with Logging {
         fetcher.getTable(tableName) match {
           case Some(table) =>
             val select = generateSelect(table)
-            println(select)
+            FlamyOutput.out.println(select)
           case None =>
             FlamyOutput.out.error(s"Table not found: $tableName")
         }
