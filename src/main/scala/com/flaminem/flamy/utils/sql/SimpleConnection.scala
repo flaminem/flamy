@@ -78,10 +78,29 @@ class SimpleConnection(
     con.close()
   }
 
+  /**
+    * Execute the given SQL query, and return a cached result set. The results must fit in the heap space, or an OutOfMemory Exception will occur.
+    * @param query
+    * @return
+    */
   def executeQuery(query: String): CachedResultSet = {
     val translatedQuery = translate(query)
     try {
       stmt.executeQuery(translatedQuery).cache
+    }
+    catch {
+      case NonFatal(e) => throw new FlamyException(s"Failed to execute the following query:\n$translatedQuery", e)
+    }
+  }
+
+  /**
+    * Execute the given SQL query
+    * @param query
+    */
+  def execute(query: String): Unit = {
+    val translatedQuery = translate(query)
+    try {
+      stmt.execute(translatedQuery)
     }
     catch {
       case NonFatal(e) => throw new FlamyException(s"Failed to execute the following query:\n$translatedQuery", e)
