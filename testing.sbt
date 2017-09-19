@@ -24,7 +24,7 @@ parallelExecution in IntegrationTest := false
 javaOptions in IntegrationTest += "-XX:MaxPermSize=1G -XX:MaxMetaspaceSize=1G"
 
 
-testOptions in IntegrationTest += Tests.Setup( () => "src/it/bin/start-it-docker".run )
+testOptions in IntegrationTest += Tests.Setup( () => "tests/start-it-docker".run )
 
 testOptions in IntegrationTest += Tests.Setup( () => "sleep 30".! )
 
