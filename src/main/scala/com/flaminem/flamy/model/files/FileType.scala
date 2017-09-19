@@ -30,7 +30,7 @@ sealed trait FileType {
   val fileExtension: String
   val multipleFilesAllowed: Boolean
 
-  val commonName : String = {
+  def commonName : String = {
     s"$filePrefix.$fileExtension"
   }
 
