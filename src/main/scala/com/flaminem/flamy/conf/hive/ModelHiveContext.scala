@@ -17,16 +17,11 @@
 package com.flaminem.flamy.conf.hive
 
 import java.io.{File, IOException}
-import java.net.{URL, URLDecoder}
 
-import com.flaminem.flamy.commands.Drop
 import com.flaminem.flamy.conf._
-import com.flaminem.flamy.exec.utils.io.FlamyOutput
 import com.flaminem.flamy.model.exceptions.FailedQueryException
 import com.flaminem.flamy.utils.FileUtils
 import com.flaminem.flamy.utils.logging.Logging
-import com.flaminem.flamy.utils.sql.SimpleConnection
-import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.hive.cli.CliSessionState
 import org.apache.hadoop.hive.conf.HiveConf
@@ -34,7 +29,6 @@ import org.apache.hadoop.hive.ql.Context
 import org.apache.hadoop.hive.ql.metadata.Hive
 import org.apache.hadoop.hive.ql.session.SessionState
 import org.apache.hadoop.util.ClassUtil
-import org.apache.hive.beeline.HiveSchemaTool
 
 /**
  * This creates the required HiveContext and SessionState used for running Hive in the model environment
