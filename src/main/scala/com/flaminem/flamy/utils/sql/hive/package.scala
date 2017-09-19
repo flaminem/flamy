@@ -18,7 +18,9 @@ package com.flaminem.flamy.utils.sql
 
 import java.util
 
+import com.flaminem.flamy.exec.utils.io.FlamyOutput
 import com.flaminem.flamy.model.Column
+import org.apache.hadoop.hive.metastore.api.FieldSchema
 import org.apache.hadoop.hive.ql.Driver
 
 import scala.collection.JavaConversions._
@@ -33,7 +35,8 @@ package object hive {
   implicit class DriverExtension(driver: Driver) {
 
     val metaData: MetaData = {
-      new MetaData(driver.getSchema.getFieldSchemas.toSeq.map{new Column(_)})
+      val fieldSchemas: Seq[FieldSchema] = Option(driver.getSchema.getFieldSchemas).getOrElse(new util.ArrayList()).toSeq
+      new MetaData(fieldSchemas.map{new Column(_)})
     }
 
     private def iterator = new Iterator[Seq[ResultRow]] {
