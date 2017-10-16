@@ -105,6 +105,14 @@ class FlamyGlobalConfVars { self =>
         s"In some shells, this allows CTRL+clicking the link to open the file."
     )
 
+  object BROWSER_GUI extends
+    GlobalConfVar[Boolean](
+      varName = "io.browser",
+      defaultValue = Some(false),
+      validator = Validator.Required(),
+      description = "When this is set to true, flamy's output will be altered to be made exploitable by a javascript front-end."
+    )
+
   object AUTO_OPEN_COMMAND extends
     GlobalConfVar[String](
       varName = "auto.open.command",
