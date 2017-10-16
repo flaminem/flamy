@@ -27,6 +27,7 @@ class TableGraphExport(g: TableGraph) {
 
   def toLightPng(path: String): Unit = new TableGraphLightExporter(g).exportToPng(path)
   def toFullPng(path: String): Unit = new TableGraphFullExporter(g).exportToPng(path)
+  def toFullSvg(path: String): Unit = new TableGraphFullExporter(g).exportToSvg(path)
   def toSchemaPng(path: String): Unit = new TableGraphSchemaExporter(g).exportToPng(path)
   def toLightDot: String = new TableGraphLightExporter(g).toDot
   def toFullDot: String = new TableGraphFullExporter(g).toDot

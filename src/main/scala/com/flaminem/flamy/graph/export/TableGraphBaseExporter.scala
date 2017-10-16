@@ -18,10 +18,12 @@ package com.flaminem.flamy.graph.export
 
 import java.io.{File, PrintWriter}
 
+import com.flaminem.flamy.exec.utils.io.FlamyOutput
 import com.flaminem.flamy.graph.TableGraph
 import com.flaminem.flamy.model.core.Model
 import com.flaminem.flamy.model.names.ItemName
 
+import scala.io.Source
 import scalax.collection.Graph
 import scalax.collection.GraphEdge.DiEdge
 import scalax.collection.io.dot.{graph2DotExport, _}
@@ -54,13 +56,23 @@ abstract class TableGraphBaseExporter[V <: ItemName](tableGraph: TableGraph) {
   }
 
   final def exportToPng(path: String): Unit = {
-    val dot: String = toDot
     val file = new File(path + ".dot")
     val writer = new PrintWriter(file)
-    writer.write(dot)
+    writer.write(this.toDot)
     writer.close()
 
     scala.sys.process.stringSeqToProcess(Seq("dot", "-T", "png", "-o", path + ".png", path + ".dot")).!
+  }
+
+  final def exportToSvg(path: String): Unit = {
+    val file = new File(path + ".dot")
+    val writer = new PrintWriter(file)
+    writer.write(this.toDot)
+    writer.close()
+
+    scala.sys.process.stringSeqToProcess(Seq("dot", "-T", "svg", "-o", path + ".svg", path + ".dot")).!
+
+    Source.fromFile(path + ".svg").getLines().dropWhile(!_.startsWith("<svg")).foreach{line => FlamyOutput.out.println(line.toString)}
   }
 
 }

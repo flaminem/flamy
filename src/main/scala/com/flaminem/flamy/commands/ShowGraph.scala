@@ -176,26 +176,32 @@ class ShowGraph extends Subcommand("graph") with FlamySubcommand { options =>
     val lightPath = s"${graphPath}_light.png"
     val fullPath = s"$graphPath.png"
 
-    if(schemaOnly()){
-      g.export.toSchemaPng(graphPath)
-      println(
-        f"""graph printed at :
-           |   ${FilePath(fullPath)}
-           """.stripMargin
-      )
-      openGraph(fullPath)
+    if(FlamyGlobalContext.BROWSER_GUI.getProperty){
+      g.export.toFullSvg(graphPath)
     }
     else {
-      g.export.toLightPng(graphPath + "_light")
-      g.export.toFullPng(graphPath)
-      println(
-        f"""graphs printed at :
-           |   ${FilePath(fullPath)}
-           |   ${FilePath(lightPath)}
+      if(schemaOnly()){
+        g.export.toSchemaPng(graphPath)
+        println(
+          f"""graph printed at :
+             |   ${FilePath(fullPath)}
            """.stripMargin
-      )
-      openGraph(lightPath, fullPath)
+        )
+        openGraph(fullPath)
+      }
+      else {
+        g.export.toLightPng(graphPath + "_light")
+        g.export.toFullPng(graphPath)
+        println(
+          f"""graphs printed at :
+             |   ${FilePath(fullPath)}
+             |   ${FilePath(lightPath)}
+           """.stripMargin
+        )
+        openGraph(lightPath, fullPath)
+      }
     }
+
   }
 
   override def doCommand(globalOptions: FlamyGlobalOptions, subCommands: List[ScallopConf]): ReturnStatus = {
