@@ -83,7 +83,7 @@ You can use the `--config-file` to point the configuration file to an alternate 
 Once packaged, you can start a shell with 
 
 ```
-target/universal/stage/bin/flamy-ee shell
+target/universal/stage/bin/flamy shell
 ```
 
 Once in the shell, the `help` command will list all the available commands and their options, and the `show conf` command
